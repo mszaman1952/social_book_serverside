@@ -13,6 +13,7 @@ const router = require('./Routers/API');
 // Import data from env file
 require('dotenv').config();
 const {PORT,DATA} = process.env;
+router.use(express.static('public'));
 
 
 // security middleware....

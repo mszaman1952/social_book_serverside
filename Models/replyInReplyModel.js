@@ -1,6 +1,6 @@
 const { Schema, model, default: mongoose } = require('mongoose');
 
-const commentReplySchema = new Schema({
+const replyInReplySchema = new Schema({
     userId : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
@@ -11,12 +11,17 @@ const commentReplySchema = new Schema({
         required : true,
         ref : "comment"
     }, 
-    commentReplyContent: {
+    commentReplyId : {
+        type : mongoose.Schema.Types.ObjectId,
+        required : true,
+        ref : "commentReply"
+    },
+    replyInReplyContent: {
         type: String,
-        required: [true, 'Comment Reply Content is required'],
+        required: [true, 'Reply In Reply Content is required'],
         trim : true
     },
 }, {timestamps : true, versionKey : false});
 
-const CommentReply = model('commentReply', commentReplySchema);
-module.exports = CommentReply;
+const ReplyInReply = model('replyInReply', replyInReplySchema);
+module.exports = ReplyInReply;

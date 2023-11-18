@@ -9,8 +9,6 @@ const userProfileModel = require('../Models/user_profile_Model');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
-
-
 exports.registration_user = async(req)=>{
     try {
 
@@ -44,7 +42,7 @@ exports.registration_user = async(req)=>{
             return {status:"Fail",message:"email address already exist."};
         }
 
-        const username = firstName + lastName;
+        const username = `${firstName} ${lastName}`;
 
         const newUserName = await validationUserName(username);
 
@@ -83,7 +81,7 @@ exports.activate_user = async(req)=>{
 
         const findUser = await userModel.findOne({_id:verificationData.id});
 
-        if(findUser.activied == true){
+        if(findUser.activated == true){
             return {status:"Fail",message:"already activated your account."};
         }
 
@@ -103,9 +101,6 @@ exports.activate_user = async(req)=>{
         return {status:"Fail",message:"something went wrong.",error:err.message};
     }
 };
-
-
-
 
 exports.login_user = async(req)=>{
     try {

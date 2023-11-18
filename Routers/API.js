@@ -25,30 +25,44 @@ router.post('/registration', registration);
 router.post('/activate/:id', activate);
 router.post('/login', login);
 
+// post controller import ==========================
 const { getPosts, addPost, getPost, deletePost, updatePost } = require('../Controllers/postController');
-const upload = require('../middleware/uploadFile');
+
+// file upload middleware import============================
+const postUpload = require('../middleware/uploadFile');
+
+// comment controller import==================================
 const { createComment, readComment, updateComment, deleteComment } = require('../Controllers/commentController');
+
+// comment reply controller import=============================
 const { commentReplyCreate, getCommentReply, updateCommentReply, deleteCommentReply } = require('../Controllers/commentReplyController');
 
-// post section
+// replyInReply Controller import ===========================
+const { createReplyInReply, getReplyInReply, updateReplyInReply, deleteReplyInReply } = require('../Controllers/replyInReplyController');
+
+// post Rout section=========================================
 router.get('/getPosts', getPosts);
 router.get('/getPost/:id', getPost);
-// router.post('/addPost', upload.array(['image',"video"], 2), addPost);
-router.post('/addPost', upload.any(), addPost);
-
-router.put('/updatePost/:id', upload.single('image'), updatePost); // Remove trailing slash
+router.post('/addPost', postUpload.any(), addPost);
+router.put('/updatePost/:id', postUpload.any(), updatePost); 
 router.delete('/deletePost/:id', deletePost); 
 
-// comment router
-router.post('/createComment', createComment)
-router.get('/readComment/:id',readComment)
-router.put('/updateComment/:id', updateComment)
-router.delete('/deleteComment/:id', deleteComment)
+// comment  section==============================================
+router.post('/createComment', createComment);
+router.get('/readComment/:id',readComment);
+router.put('/updateComment/:id', updateComment);
+router.delete('/deleteComment/:id', deleteComment);
 
-// reply section
-router.post('/createCommentReply', commentReplyCreate)
-router.get('/getCommentReply/:id', getCommentReply)
-router.put('/updateCommentReply/:id', updateCommentReply)
-router.delete('/deleteCommentReply/:id', deleteCommentReply)
+// reply section==============================================
+router.post('/createCommentReply', commentReplyCreate);
+router.get('/getCommentReply/:id', getCommentReply);
+router.put('/updateCommentReply/:id', updateCommentReply);
+router.delete('/deleteCommentReply/:id', deleteCommentReply);
+
+// reply in reply section===============================
+router.post('/createReplyInReply', createReplyInReply);
+router.get('/getReplyInReply/:id', getReplyInReply);
+router.put('/updateReplyInReply/:id', updateReplyInReply);
+router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
 
 module.exports = router;

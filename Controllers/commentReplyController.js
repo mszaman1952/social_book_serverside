@@ -1,6 +1,6 @@
-const { default: mongoose } = require("mongoose");
 const CommentReply = require("../Models/commentReplyModel");
 
+// create comment reply=======================
 const commentReplyCreate = async(req, res) => {
     try {
         const {userId, commentId, commentReplyContent} = req.body;
@@ -22,11 +22,18 @@ const commentReplyCreate = async(req, res) => {
     }
 }
 
-// get comment 
+// get comment reply ====================
 const getCommentReply = async (req, res) => {
     try {
-        const commentReplyId = req.params.id;
-        const commentReplyGet = await CommentReply.findById(commentReplyId);
+        const id = req.params.id;
+        const commentReplyGet = await CommentReply.findById(id);
+        if(!commentReplyGet){
+          res.status(404).json({
+            status: 'failed',
+            message: 'Coment Reply not found',
+          });
+          return;
+        }
 
         res.status(200).json({
             status : "Success",
@@ -40,44 +47,48 @@ const getCommentReply = async (req, res) => {
     }
 }
 
+// update comment reply======================
 const updateCommentReply = async (req, res) => {
-    try {
-      const commentReplyId = req.params.id;
-      const commentReplyUpdates = req.body;
-  
-      const commentReplyUpdate = await CommentReply.updateOne({
-        _id: commentReplyId,
-      }, {
-        $set: commentReplyUpdates,
-      }, {
-        new: true,
-      });
-  
-      if (commentReplyUpdate.nModified === 0) {
-        res.status(404).json({
-          status: 'failed',
-          message: 'Comment reply not found',
-        });
-        return;
-      }
-  
-      res.json({
-        status: 'success',
-        data : commentReplyUpdate
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: 'failed',
-        message: error.message,
-      });
-    }
-  };  
+  try {
+    const id = req.params.id;
+    const commentReplyContent = req.body;
 
-// delete commentReply
+    const commentReply = await CommentReply.findById(id);
+
+    if (!commentReply) {
+      res.status(404).json({
+        status: 'failed',
+        message: 'Coment Reply not found',
+      });
+      return;
+    }
+
+    const commentReplyUpdate = await CommentReply.updateOne({
+      _id: id,
+    }, {
+      $set: commentReplyContent,
+    }, {
+      new: true,
+    });
+
+    res.json({
+      status: 'success',
+      data: commentReplyUpdate,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'failed',
+      message: error.message,
+    });
+  }
+};
+ 
+
+// delete commentReply=====================
 const deleteCommentReply = async(req,res) => {
     try {
-        const commentReplyId = req.params.id;
-        await CommentReply.deleteOne({_id : commentReplyId})
+        const id = req.params.id;
+        await CommentReply.deleteOne({_id : id})
 
         res.status(200).json({
             status : "Success",

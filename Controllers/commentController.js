@@ -1,6 +1,7 @@
 const Comment = require("../Models/commentModel");
-const mongoose = require('mongoose')
+const CommentReply = require("../Models/commentReplyModel");
 
+// create comment =====================
 const createComment = async (req, res) => {
     try {
         const {userId, postId, commentContent} = req.body;
@@ -22,11 +23,20 @@ const createComment = async (req, res) => {
     }
 }
 
+// read Comment ===========================
+
 const readComment = async (req, res) => {
     try {
-        const commentId =new mongoose.Types.ObjectId(req.params.id); // create a new ObjectId
+        const id = req.params.id; 
 
-        const commentRead = await Comment.findById(commentId)
+        const commentRead = await Comment.findById(id)
+        if(!commentRead){
+            res.status(404).json({
+                status: 'failed',
+                message: 'Coment not found',
+              });
+              return;
+        }
 
         res.status(200).json({
             status : "Success",
@@ -41,13 +51,24 @@ const readComment = async (req, res) => {
     }
 }
 
+// update Comment=====================
+
 const updateComment = async(req, res) => {
     try {
-        const commentId = req.params.id;
+        const id = req.params.id;
         const commentContent = req.body;
+
+        const comment = await Comment.findById(id);
+        if(!comment){
+            res.status(404).json({
+                status: 'failed',
+                message: 'Comment is Not Found',
+              });
+              return;
+        }
     
         const updatedCommentData = await Comment.findByIdAndUpdate(
-          commentId,
+          id,
           commentContent,
           { new: true }
         );
@@ -64,10 +85,16 @@ const updateComment = async(req, res) => {
       }    
 }
 
+// comment delete =========================
+
 const deleteComment = async(req, res) => {
     try {
-        const commentId = req.params.id;
-        await Comment.deleteOne({_id :commentId});
+        const id = req.params.id;
+        await Comment.deleteOne({_id : id});
+
+        // comment Reply deleted
+        await CommentReply.deleteMany({commentId : id})
+        console.log(await CommentReply.deleteMany({commentId : id}))
 
         res.status(200).json({
             status : "Success",
@@ -80,7 +107,53 @@ const deleteComment = async(req, res) => {
           })
     }
 }
+// Aggregate e ekhon kichuta problem ache tai apatoto aggregate user kora theke biroto achi
 
+// const deleteComment = async (req, res) => {
+//     try {
+//       const commentId = req.params.id;
+  
+//       // Delete the comment
+//       const pipeline = [
+//         { $match: { _id: commentId } },
+//         { $delete: {} }
+//       ];
+//       await Comment.aggregate(pipeline);
+  
+//       // Delete all replies associated with the comment
+//       const replyPipeline = [
+//         { $match: { commentId: commentId } },
+//         { $delete: {} }
+//       ];
+//       await Reply.aggregate(replyPipeline);
+  
+//       // Delete all reply replies associated with the comment
+//       const replyReplyPipeline = [
+//         { $match: { commentId: commentId } },
+//         { $lookup: {
+//           from: "reply_replies",
+//           localField: "_id",
+//           foreignField: "replyId",
+//           as: "replyReplies"
+//         }},
+//         { $match: { replyReplies: { $exists: true } } },
+//         { $delete: {} }
+//       ];
+//       await ReplyReply.aggregate(replyReplyPipeline);
+  
+//       res.status(200).json({
+//         status: "Success",
+//         message: "Comment Delete is Successfully"
+//       });
+//     } catch (error) {
+//       res.status(500).json({
+//         status: false,
+//         message: error.message,
+//       });
+//     }
+//   };
+
+  
 module.exports = {
     createComment,
     readComment,
