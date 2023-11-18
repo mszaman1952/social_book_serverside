@@ -1,4 +1,5 @@
 const CommentReply = require("../Models/commentReplyModel");
+const ReplyInReply = require("../Models/replyInReplyModel");
 
 // create comment reply=======================
 const commentReplyCreate = async(req, res) => {
@@ -88,7 +89,10 @@ const updateCommentReply = async (req, res) => {
 const deleteCommentReply = async(req,res) => {
     try {
         const id = req.params.id;
-        await CommentReply.deleteOne({_id : id})
+        await CommentReply.deleteOne({_id : id});
+
+        // delete replyInReply================
+        await ReplyInReply.deleteMany({commentReplyId : id});
 
         res.status(200).json({
             status : "Success",

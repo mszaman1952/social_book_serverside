@@ -2,6 +2,7 @@ const Post = require('../Models/postModel');
 const { clientError, serverError } = require('./error');
 const Comment = require('../Models/commentModel');
 const CommentReply = require('../Models/commentReplyModel');
+const ReplyInReply = require('../Models/replyInReplyModel');
 
 // get all posts ===============
 const getPosts = async (req, res) => {
@@ -126,6 +127,9 @@ const deletePost = async (req, res) => {
 
     // Delete all replies associated with the post
     await CommentReply.deleteMany({ postId: Comment._id });
+
+    // Delete all nseted reply
+    await ReplyInReply.deleteMany({postId : ReplyInReply._id})
 
     res.status(200).send({
       success: true,

@@ -1,5 +1,6 @@
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
+const ReplyInReply = require("../Models/replyInReplyModel");
 
 // create comment =====================
 const createComment = async (req, res) => {
@@ -86,7 +87,6 @@ const updateComment = async(req, res) => {
 }
 
 // comment delete =========================
-
 const deleteComment = async(req, res) => {
     try {
         const id = req.params.id;
@@ -94,7 +94,10 @@ const deleteComment = async(req, res) => {
 
         // comment Reply deleted
         await CommentReply.deleteMany({commentId : id})
-        console.log(await CommentReply.deleteMany({commentId : id}))
+        
+        // ReplyInReply/Nested Reply Deleted
+        await ReplyInReply.deleteMany({commentId : id});
+        console.log(await ReplyInReply.deleteMany({commentReplyId : id}))
 
         res.status(200).json({
             status : "Success",
@@ -107,51 +110,6 @@ const deleteComment = async(req, res) => {
           })
     }
 }
-// Aggregate e ekhon kichuta problem ache tai apatoto aggregate user kora theke biroto achi
-
-// const deleteComment = async (req, res) => {
-//     try {
-//       const commentId = req.params.id;
-  
-//       // Delete the comment
-//       const pipeline = [
-//         { $match: { _id: commentId } },
-//         { $delete: {} }
-//       ];
-//       await Comment.aggregate(pipeline);
-  
-//       // Delete all replies associated with the comment
-//       const replyPipeline = [
-//         { $match: { commentId: commentId } },
-//         { $delete: {} }
-//       ];
-//       await Reply.aggregate(replyPipeline);
-  
-//       // Delete all reply replies associated with the comment
-//       const replyReplyPipeline = [
-//         { $match: { commentId: commentId } },
-//         { $lookup: {
-//           from: "reply_replies",
-//           localField: "_id",
-//           foreignField: "replyId",
-//           as: "replyReplies"
-//         }},
-//         { $match: { replyReplies: { $exists: true } } },
-//         { $delete: {} }
-//       ];
-//       await ReplyReply.aggregate(replyReplyPipeline);
-  
-//       res.status(200).json({
-//         status: "Success",
-//         message: "Comment Delete is Successfully"
-//       });
-//     } catch (error) {
-//       res.status(500).json({
-//         status: false,
-//         message: error.message,
-//       });
-//     }
-//   };
 
   
 module.exports = {
