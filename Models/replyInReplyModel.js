@@ -21,6 +21,12 @@ const replyInReplySchema = new Schema({
         required: [true, 'Reply In Reply Content is required'],
         trim : true
     },
+    image : {
+        type : String
+    },
+    video : {
+        type : String
+    }
 }, {timestamps : true, versionKey : false});
 
 const ReplyInReply = model('replyInReply', replyInReplySchema);

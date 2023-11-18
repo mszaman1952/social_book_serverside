@@ -17,6 +17,12 @@ const commentSchema = new Schema({
         type: String,
         required: [true, 'comment Content is required']
     },
+    image : {
+        type : String
+    },
+    video : {
+        tryp : String
+    }
 }, {timestamps : true, versionKey : false});
 
 const Comment = model('comment', commentSchema);

@@ -8,13 +8,11 @@ const postsSchema = new Schema({
     },
     content: {
         type: String,
-        // required: [true, 'post content is required'],
         minlength: [5, 'post content must be atleast 5 characters'],
         trim: true
     },
     image: {
         type: String,
-        // required: [true, 'post image is required']
     },
     video : {
         type : String,
