@@ -1,28 +1,49 @@
+const userModel = require("../Models/User_Model");
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
+const Post = require("../Models/postModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
 
 // create comment =====================
 const createComment = async (req, res) => {
-    try {
-        const {userId, postId, commentContent} = req.body;
-        const newComment = await Comment({
-            userId,
-            postId,
-            commentContent
-        }).save()
+  try {
+    const {userId, postId, commentContent} = req.body;
 
-        res.status(201).json({
-            status : 'Success',
-            data : newComment
-        })
-    } catch (error) {
-        res.status(500).json({
-            status : false,
-            message : error.message
-        })
+    const user = await userModel.findById(userId);
+    if (!user) {
+      res.status(404).json({
+        status: 'failed',
+        message: 'User not found',
+      });
+      return;
     }
-}
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      res.status(404).json({
+        status: 'failed',
+        message: 'Post not found',
+      });
+      return;
+    }
+    const newComment = await Comment({
+      userId,
+      postId,
+      commentContent,
+    }).save();
+
+    res.status(201).json({
+      status: 'Success',
+      data: newComment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+};
+
 
 // read Comment ===========================
 

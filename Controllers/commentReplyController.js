@@ -1,3 +1,5 @@
+const userModel = require("../Models/User_Model");
+const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
 
@@ -5,6 +7,18 @@ const ReplyInReply = require("../Models/replyInReplyModel");
 const commentReplyCreate = async(req, res) => {
     try {
         const {userId, commentId, commentReplyContent} = req.body;
+
+        // validation check ===============================
+        const user = await userModel.findById(userId);
+        const comment = await Comment.findById(commentId);
+
+      if (!user || !comment) {
+        res.status(404).json({
+        status: 'failed',
+        message: 'User or comment not found',
+      });
+      return;
+    }
         const createCommentReply = await CommentReply({
             userId,
             commentId,

@@ -3,6 +3,7 @@ const { clientError, serverError } = require('./error');
 const Comment = require('../Models/commentModel');
 const CommentReply = require('../Models/commentReplyModel');
 const ReplyInReply = require('../Models/replyInReplyModel');
+const userModel = require('../Models/User_Model');
 
 // get all posts ===============
 const getPosts = async (req, res) => {
@@ -46,7 +47,16 @@ const addPost = async (req, res) => {
   try {
     // Destructure userId and content from req.body
     const { userId, content } = req.body;
-
+    // user validation check===========
+    const user = await userModel.findById(userId);
+    console.log(user);
+    if (!user) {
+      res.status(404).json({
+        status: 'failed',
+        message: 'User not found',
+      });
+      return; 
+    }
     // Find the image file 
     const imageFile = req.files.find(file => file.fieldname === 'image'); 
 
@@ -56,7 +66,7 @@ const addPost = async (req, res) => {
     // Check if at least one of content, image, or video is provided
     if (!content && !imageFile && !videoFile) {
       return await clientError(res, 400, 'At least one of content, image, or video is required');
-    }
+    } 
 
     const postFields = {
       userId,
