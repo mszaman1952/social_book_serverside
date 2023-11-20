@@ -25,22 +25,47 @@ router.post('/activate/:id', activate);
 router.post('/login', login);
 
 // post controller import ==========================
-const { getPosts, addPost, getPost, deletePost, updatePost } = require('../Controllers/postController');
+const { 
+    getPosts, 
+    addPost, 
+    getPost, 
+    deletePost, 
+    updatePost 
+} = require('../Controllers/postController');
 
 // file upload middleware import============================
 const postUpload = require('../middleware/uploadFile');
 
 // comment controller import==================================
-const { createComment, readComment, updateComment, deleteComment } = require('../Controllers/commentController');
+const { 
+    createComment, 
+    readComment, 
+    updateComment, 
+    deleteComment 
+} = require('../Controllers/commentController');
 
 // comment reply controller import=============================
-const { commentReplyCreate, getCommentReply, updateCommentReply, deleteCommentReply } = require('../Controllers/commentReplyController');
+const { 
+    commentReplyCreate, 
+    getCommentReply, 
+    updateCommentReply, 
+    deleteCommentReply 
+} = require('../Controllers/commentReplyController');
 
 // replyInReply Controller import ===========================
-const { createReplyInReply, getReplyInReply, updateReplyInReply, deleteReplyInReply } = require('../Controllers/replyInReplyController');
+const { 
+    createReplyInReply, 
+    getReplyInReply, 
+    updateReplyInReply, 
+    deleteReplyInReply 
+} = require('../Controllers/replyInReplyController');
 
 // friend request controller import ============================
-const { sendFriendRequest, acceptFriendRequest, rejectFriendRequest } = require('../Controllers/firendRequestController');
+const { 
+    sendFriendRequest, 
+    acceptFriendRequest, 
+    rejectFriendRequest 
+} = require('../Controllers/firendRequestController');
 
 // post Rout section=========================================
 router.get('/getPosts', getPosts);
