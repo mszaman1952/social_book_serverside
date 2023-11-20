@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema,model} = mongoose;
 
-
 const userSchema = new Schema(
     {
         firstName:{
@@ -39,6 +38,19 @@ const userSchema = new Schema(
             type: Boolean,
             default: false
         },
+        friendRequests: [
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: 'FriendRequest',
+            },
+          ],
+          friends: [
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: 'User',
+            },
+          ],
+        
     },
     {
         timestamps: true, versionKey: false

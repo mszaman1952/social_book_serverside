@@ -1,4 +1,3 @@
-// api.js
 const express = require('express');
 const { registration, login, activate, forget_password, set_password, create_profile, reset_profile, profile_block_pin_save, block_usre_get, pin_post_get, save_post_get, viewSingleProfile } = require('../Controllers/AUTH');
 const uploads = require('../Helpers/Upload');
@@ -40,6 +39,9 @@ const { commentReplyCreate, getCommentReply, updateCommentReply, deleteCommentRe
 // replyInReply Controller import ===========================
 const { createReplyInReply, getReplyInReply, updateReplyInReply, deleteReplyInReply } = require('../Controllers/replyInReplyController');
 
+// friend request controller import ============================
+const { sendFriendRequest, acceptFriendRequest, rejectFriendRequest } = require('../Controllers/firendRequestController');
+
 // post Rout section=========================================
 router.get('/getPosts', getPosts);
 router.get('/getPost/:id', getPost);
@@ -64,5 +66,11 @@ router.post('/createReplyInReply', createReplyInReply);
 router.get('/getReplyInReply/:id', getReplyInReply);
 router.put('/updateReplyInReply/:id', updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
+
+// friend request section ================================
+router.post('/sendFriendRequest', sendFriendRequest);
+router.post('/acceptFriendRequest', acceptFriendRequest);
+router.post('/rejectFriendRequest', rejectFriendRequest);
+
 
 module.exports = router;

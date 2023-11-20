@@ -31,6 +31,7 @@ const createComment = async (req, res) => {
       postId,
       commentContent,
     }).save();
+    
 
     res.status(201).json({
       status: 'Success',
