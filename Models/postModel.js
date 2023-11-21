@@ -1,10 +1,14 @@
-const { Schema, model, default: mongoose } = require('mongoose');
+const {
+    Schema,
+    model,
+    default: mongoose
+} = require('mongoose');
 
 const postsSchema = new Schema({
-    userId : {
-        type : mongoose.Schema.Types.ObjectId,
-        required : true,
-        ref : "User"
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User"
     },
     content: {
         type: String,
@@ -14,10 +18,13 @@ const postsSchema = new Schema({
     image: {
         type: String,
     },
-    video : {
-        type : String,
+    video: {
+        type: String,
     }
-}, {timestamps : true, versionKey : false});
+}, {
+    timestamps: true,
+    versionKey: false
+});
 
 const Post = model('Posts', postsSchema);
 module.exports = Post;

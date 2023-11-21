@@ -1,6 +1,5 @@
 const { registration_user, login_user, activate_user, forget_password, set_password, create_profile, reset_profile, profile_block_pin_save, block_usre_get, save_post_get, pin_post_get, viewSingleProfile } = require("../service/AUTH_SERVICE");
 
-
 // user auth.....
 exports.registration = async(req,res)=>{
     const result = await registration_user(req);

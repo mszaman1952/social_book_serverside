@@ -1,18 +1,26 @@
 const jwt = require('jsonwebtoken');
 
-exports.tokenVerify = async(req,res,next)=>{
+exports.tokenVerify = async (req, res, next) => {
     try {
-        const {token} = req.headers;
-        if(!token){
-            return   res.status(401).json({status:"Fail",message:"Unauthorized."});
+        const {
+            token
+        } = req.headers;
+        if (!token) {
+            return res.status(401).json({
+                status: "Fail",
+                message: "Unauthorized."
+            });
         }
 
-        const verifyToken = jwt.verify(token,process.env.KEY);
+        const verifyToken = jwt.verify(token, process.env.KEY);
 
-        const expireToken = Date.now()/1000 > verifyToken.exp;
-        
-        if(expireToken){
-            res.status(200).json({status:"Fail",message:"expire Your Token"});
+        const expireToken = Date.now() / 1000 > verifyToken.exp;
+
+        if (expireToken) {
+            res.status(200).json({
+                status: "Fail",
+                message: "expire Your Token"
+            });
         }
 
         req.userId = verifyToken['id'];
@@ -20,6 +28,10 @@ exports.tokenVerify = async(req,res,next)=>{
         next();
 
     } catch (err) {
-        res.status(200).json({status:"Fail",message:"something went worng.",error:err.message});
+        res.status(200).json({
+            status: "Fail",
+            message: "something went worng.",
+            error: err.message
+        });
     }
 };

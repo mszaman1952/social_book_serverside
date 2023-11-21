@@ -1,28 +1,34 @@
-const { Schema, model, default: mongoose } = require('mongoose');
+const {
+    Schema,
+    model,
+    default: mongoose
+} = require('mongoose');
 
 const commentSchema = new Schema({
-    userId : {
-        type : mongoose.Schema.Types.ObjectId,
-        required : true,
-        ref : "User"
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User"
     },
     postId: {
         type: mongoose.Schema.Types.ObjectId,
-        required : true,
-        ref : "post"
+        required: true,
+        ref: "post"
     },
     commentContent: {
         type: String,
         required: [true, 'comment Content is required']
     },
-    image : {
-        type : String
+    image: {
+        type: String
     },
-    video : {
-        tryp : String
+    video: {
+        tryp: String
     }
-}, {timestamps : true, versionKey : false});
+}, {
+    timestamps: true,
+    versionKey: false
+});
 
 const Comment = model('comment', commentSchema);
 module.exports = Comment;
-
