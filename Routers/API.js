@@ -82,7 +82,8 @@ const {
     rejectFriendRequest,
     unfriend,
     getAllFriends,
-    getAllFriendRequestsReceived
+    getAllFriendRequestsReceived,
+    cancelSentFriendRequest
 } = require('../Controllers/firendRequestController');
 
 // post Rout section=========================================
@@ -117,6 +118,7 @@ router.post('/rejectFriendRequest', rejectFriendRequest);
 router.post('/unfriend', unfriend);
 router.get('/allFriends', getAllFriends);
 router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
+router.post('/cancelSentFriendRequest', cancelSentFriendRequest)
 
 
 module.exports = router;

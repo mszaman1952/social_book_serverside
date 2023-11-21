@@ -58,6 +58,6 @@ const userSchema = new Schema({
     versionKey: false
 });
 
-const userModel = model('users', userSchema);
+const userModel = model('User', userSchema);
 
 module.exports = userModel;

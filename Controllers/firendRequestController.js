@@ -258,6 +258,12 @@ const unfriend = async (req, res) => {
                 message: 'User or friend not found',
             });
         }
+        if (!user.friends.includes(friendId)) {
+            return res.status(400).json({
+                status: 'failed',
+                message: 'Users are not friends',
+            });
+        }
 
         // Remove friendId from the user's friends array
         user.friends = user.friends.filter((friendInList) => friendInList.toString() !== friendId);
@@ -288,8 +294,11 @@ const getAllFriends = async (req, res) => {
         const {
             userId
         } = req.body;
-        // Find the user by ID
-        const user = await userModel.findById(userId);
+        // Find the user by ID and join with friends
+        const user = await userModel.findById(userId)
+            .populate('friends')
+            .exec();
+
         // Check if the user exists
         if (!user) {
             return res.status(404).json({
@@ -298,12 +307,21 @@ const getAllFriends = async (req, res) => {
             });
         }
 
-        const friends = (user?.friends || []).map((friend) => ({
+        const friends = (user?.friends).map((friend) => ({
             _id: friend._id,
             firstName: friend.firstName,
             lastName: friend.lastName,
             email: friend.email,
         }));
+
+        // Check if the user has friends
+        if (!user.friends) {
+            return res.status(200).json({
+                status: 'success',
+                message: 'User has no friends',
+                data: friends,
+            });
+        }
 
         res.status(200).json({
             status: 'success',
@@ -389,6 +407,62 @@ const getSentFriendRequests = async (req, res) => {
 };
 
 
+// cancell sent friend request ============================= 
+
+const cancelSentFriendRequest = async (req, res) => {
+    try {
+        const {
+            senderId,
+            friendRequestId
+        } = req.body;
+
+        // Get information about the sender from the model
+        const sender = await userModel.findById(senderId);
+
+        if (!sender) {
+            return res.status(404).json({
+                status: 'failed',
+                message: 'Sender not found',
+            });
+        }
+
+        // Find and remove the friend request sent by the sender
+        const friendRequest = await FriendRequest.findByIdAndRemove(friendRequestId);
+
+        if (!friendRequest) {
+            return res.status(400).json({
+                status: 'failed',
+                message: 'No friend request found to cancel',
+            });
+        }
+
+        // Remove the friend request ID from the sender's sentFriendRequests array
+        sender.sentFriendRequests = sender.sentFriendRequests.filter(id => id.toString() !== friendRequest._id.toString());
+
+        // Get information about the receiver from the model
+        const receiver = await userModel.findById(friendRequest.receiver);
+
+        if (receiver) {
+            // Remove the friend request ID from the receiver's friendRequests array
+            receiver.friendRequests = receiver.friendRequests.filter(id => id.toString() !== friendRequest._id.toString());
+            await receiver.save();
+        }
+
+        await sender.save();
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Sent friend request canceled successfully',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 'failed',
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
     sendFriendRequest,
     acceptFriendRequest,
@@ -396,5 +470,6 @@ module.exports = {
     unfriend,
     getAllFriends,
     getAllFriendRequestsReceived,
-    getSentFriendRequests
+    getSentFriendRequests,
+    cancelSentFriendRequest
 };

@@ -130,9 +130,6 @@ const deleteComment = async (req, res) => {
         await ReplyInReply.deleteMany({
             commentId: id
         });
-        console.log(await ReplyInReply.deleteMany({
-            commentReplyId: id
-        }))
 
         res.status(200).json({
             status: "Success",
@@ -145,7 +142,6 @@ const deleteComment = async (req, res) => {
         })
     }
 }
-
 
 module.exports = {
     createComment,
