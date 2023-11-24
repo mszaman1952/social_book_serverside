@@ -88,13 +88,17 @@ const {
     unfriend,
     getAllFriends,
     getAllFriendRequestsReceived,
-    cancelSentFriendRequest
+    cancelSentFriendRequest,
+    findFriends
 } = require('../Controllers/firendRequestController');
 
 // general reaction controller import ==========================
 const { 
-    toggleReaction, getSpecificReactions, getTotalReactionsCount
+    toggleReaction, 
+    getSpecificReactions, 
+    getTotalReactionsCount
 } = require('../Controllers/generalReactionController');
+const { sharePost } = require('../Controllers/sharePostController');
 
 // import message controller ============================
 // const { 
@@ -108,6 +112,7 @@ router.get('/getPost/:id', getPost);
 router.post('/addPost', postUpload.any(), addPost);
 router.put('/updatePost/:id', postUpload.any(), updatePost);
 router.delete('/deletePost/:id', deletePost);
+router.post('/sharePost',tokenVerify, sharePost);
 
 // comment  section==============================================
 router.post('/createComment',commentUpload.any(), createComment);
@@ -128,13 +133,14 @@ router.put('/updateReplyInReply/:id', updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
 
 // friend request section ================================
-router.post('/sendFriendRequest', sendFriendRequest);
+router.post('/sendFriendRequest/:id/:idt', sendFriendRequest);
 router.post('/acceptFriendRequest', acceptFriendRequest);
 router.post('/rejectFriendRequest', rejectFriendRequest);
 router.post('/unfriend', unfriend);
 router.get('/allFriends', getAllFriends);
 router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
 router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
+router.get('/findFriend', findFriends);
 
 // message route endpoint section ============================
 // router.get("/getMessage", getAllMessages);

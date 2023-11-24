@@ -463,6 +463,29 @@ const cancelSentFriendRequest = async (req, res) => {
     }
 };
 
+
+// find friends controller ==========================
+
+const findFriends = async (req, res) => {
+  try {
+    const { searchQuery } = req.body;
+
+    // Use a MongoDB query to find friends based on the search criteria
+    const friends = await userModel.find({
+      $or: [
+        { userName: { $regex: searchQuery, $options: 'i' } }, 
+        { email: { $regex: searchQuery, $options: 'i' } }, 
+    ],
+    });
+
+    res.status(200).json({ success: true, data: friends });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to find friends' });
+  }
+};
+
+
 module.exports = {
     sendFriendRequest,
     acceptFriendRequest,
@@ -471,5 +494,6 @@ module.exports = {
     getAllFriends,
     getAllFriendRequestsReceived,
     getSentFriendRequests,
-    cancelSentFriendRequest
+    cancelSentFriendRequest,
+    findFriends
 };
