@@ -20,7 +20,11 @@ const postsSchema = new Schema({
     },
     video: {
         type: String,
-    }
+    },
+    reactionCount: {
+        type: Number,
+        default: 0,
+      },    
 }, {
     timestamps: true,
     versionKey: false

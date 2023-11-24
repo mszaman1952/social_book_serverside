@@ -22,7 +22,7 @@ const replyInReplySchema = new Schema({
     },
     replyInReplyContent: {
         type: String,
-        required: [true, 'Reply In Reply Content is required'],
+        min: [3, 'Reply In Reply Content Minimum 3 Charecter is required'],
         trim: true
     },
     image: {
@@ -30,7 +30,11 @@ const replyInReplySchema = new Schema({
     },
     video: {
         type: String
-    }
+    },
+    reactionCount: {
+        type: Number,
+        default: 0,
+      },    
 }, {
     timestamps: true,
     versionKey: false

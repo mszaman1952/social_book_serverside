@@ -11,7 +11,24 @@ const bodyParser = require('body-parser');
 const expressRateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const router = require('./Routers/API');
+// const http = require('http');
+// const socketIO = require('socket.io');
 
+// const server = http.createServer(app);
+// const io = socketIO(server);
+
+// // Socket.io setup
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+  
+//     // ... (socket.io event handlers)
+  
+//     socket.on('disconnect', () => {
+//       console.log('User disconnected');
+//     });
+//   });
+  
+ 
 // Import data from env file
 require('dotenv').config();
 const {
@@ -29,7 +46,6 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
-
 
 // Express Rate limit
 const limiter = expressRateLimit({
@@ -60,3 +76,4 @@ module.exports = {
     mongoose,
     DATA
 };
+

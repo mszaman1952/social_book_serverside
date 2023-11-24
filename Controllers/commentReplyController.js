@@ -2,6 +2,7 @@ const userModel = require("../Models/User_Model");
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
+const { clientError } = require("./error");
 
 // create comment reply=======================
 const commentReplyCreate = async (req, res) => {
@@ -23,10 +24,26 @@ const commentReplyCreate = async (req, res) => {
             });
             return;
         }
+                
+         // Find the image file 
+         const imageFile = req.files.find(file => file.fieldname === 'image');
+
+         // Find the video file
+         const videoFile = req.files.find(file => file.fieldname === 'video');
+ 
+         // Check if at least one of content, image, or video is provided
+         if (!commentReplyContent && !imageFile && !videoFile) {
+             return await clientError(res, 400, 'At least one of content, image, or video is required');
+         }
+ 
         const createCommentReply = await CommentReply({
             userId,
             commentId,
-            commentReplyContent
+            commentReplyContent : commentReplyContent?commentReplyContent: null,
+            // Assign image filename if found, else null
+            image: imageFile ? imageFile.filename : null,
+            // Assign video filename if found, else null
+            video: videoFile ? videoFile.filename : null,
         }).save();
 
         res.status(201).json({
@@ -34,6 +51,7 @@ const commentReplyCreate = async (req, res) => {
             data: createCommentReply
         })
     } catch (error) {
+
         res.status(404).json({
             status: "failed",
             message: error.message
@@ -127,7 +145,6 @@ const deleteCommentReply = async (req, res) => {
         })
     }
 }
-
 
 module.exports = {
     commentReplyCreate,

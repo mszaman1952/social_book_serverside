@@ -3,6 +3,7 @@ const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const Post = require("../Models/postModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
+const { clientError } = require("./error");
 
 // create comment =====================
 const createComment = async (req, res) => {
@@ -30,12 +31,29 @@ const createComment = async (req, res) => {
             });
             return;
         }
+
+        console.log(req.files)
+
+         // Find the image file 
+         const imageFile = req.files.find(file => file.fieldname === 'image');
+
+         // Find the video file
+         const videoFile = req.files.find(file => file.fieldname === 'video');
+ 
+         // Check if at least one of content, image, or video is provided
+         if (!commentContent && !imageFile && !videoFile) {
+             return await clientError(res, 400, 'At least one of content, image, or video is required');
+         }
+ 
         const newComment = await Comment({
             userId,
             postId,
-            commentContent,
+            commentContent : commentContent ? commentContent : null,
+            // Assign image filename if found, else null
+            image: imageFile ? imageFile.filename : null,
+            // Assign video filename if found, else null
+            video: videoFile ? videoFile.filename : null,
         }).save();
-
 
         res.status(201).json({
             status: 'Success',
@@ -83,24 +101,29 @@ const readComment = async (req, res) => {
 const updateComment = async (req, res) => {
     try {
         const id = req.params.id;
-        const commentContent = req.body;
-
-        const comment = await Comment.findById(id);
+        const { userId } = req.body;
+        
+        const comment = await Comment.findOne({
+            _id: id, 
+            userId: userId, // Add a check for the user ID
+        });
         if (!comment) {
-            res.status(404).json({
-                status: 'failed',
-                message: 'Comment is Not Found',
-            });
-            return;
+            return await clientError(res, 404, 'Comment or user with this id was not found');
         }
+        const imageFile = req.files.find(file => file.fieldname === 'image');
+        const videoFile = req.files.find(file => file.fieldname === 'video');
 
-        const updatedCommentData = await Comment.findByIdAndUpdate(
-            id,
-            commentContent, {
-                new: true
-            }
-        );
+        const updateFields = {
+            content: req.body.content ? req.body.content : null,
+            image: imageFile ? imageFile.filename : null,
+            video: videoFile ? videoFile.filename : null,
+        };
 
+        const updatedCommentData = await Comment.updateOne({
+            _id: id
+        }, {
+            $set: updateFields
+        });
         res.status(200).json({
             status: "Success",
             updatedCommentData,

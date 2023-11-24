@@ -17,7 +17,7 @@ const commentReplySchema = new Schema({
     },
     commentReplyContent: {
         type: String,
-        required: [true, 'Comment Reply Content is required'],
+        min: [3, 'Comment Reply Content minimum 3 charectar required'],
         trim: true
     },
     image: {
@@ -25,7 +25,11 @@ const commentReplySchema = new Schema({
     },
     video: {
         type: String
-    }
+    },
+    reactionCount: {
+        type: Number,
+        default: 0,
+      },    
 }, {
     timestamps: true,
     versionKey: false

@@ -49,7 +49,12 @@ const {
 } = require('../Controllers/postController');
 
 // file upload middleware import============================
-const postUpload = require('../middleware/uploadFile');
+const { 
+    postUpload, 
+    commentUpload, 
+    replyUpload, 
+    nestedReplyUpload
+} = require('../middleware/uploadFile');
 
 // comment controller import==================================
 const {
@@ -86,6 +91,17 @@ const {
     cancelSentFriendRequest
 } = require('../Controllers/firendRequestController');
 
+// general reaction controller import ==========================
+const { 
+    toggleReaction, getSpecificReactions, getTotalReactionsCount
+} = require('../Controllers/generalReactionController');
+
+// import message controller ============================
+// const { 
+    // getAllMessages, 
+    // addMessage 
+// } = require('../Controllers/messageController');
+
 // post Rout section=========================================
 router.get('/getPosts', getPosts);
 router.get('/getPost/:id', getPost);
@@ -94,19 +110,19 @@ router.put('/updatePost/:id', postUpload.any(), updatePost);
 router.delete('/deletePost/:id', deletePost);
 
 // comment  section==============================================
-router.post('/createComment', createComment);
+router.post('/createComment',commentUpload.any(), createComment);
 router.get('/readComment/:id', readComment);
-router.put('/updateComment/:id', updateComment);
+router.put('/updateComment/:id', commentUpload.any(),updateComment);
 router.delete('/deleteComment/:id', deleteComment);
 
 // reply section==============================================
-router.post('/createCommentReply', commentReplyCreate);
+router.post('/createCommentReply',replyUpload.any(), commentReplyCreate);
 router.get('/getCommentReply/:id', getCommentReply);
 router.put('/updateCommentReply/:id', updateCommentReply);
 router.delete('/deleteCommentReply/:id', deleteCommentReply);
 
 // reply in reply section===============================
-router.post('/createReplyInReply', createReplyInReply);
+router.post('/createReplyInReply',nestedReplyUpload.any(), createReplyInReply);
 router.get('/getReplyInReply/:id', getReplyInReply);
 router.put('/updateReplyInReply/:id', updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
@@ -118,7 +134,15 @@ router.post('/rejectFriendRequest', rejectFriendRequest);
 router.post('/unfriend', unfriend);
 router.get('/allFriends', getAllFriends);
 router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
-router.post('/cancelSentFriendRequest', cancelSentFriendRequest)
+router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
 
+// message route endpoint section ============================
+// router.get("/getMessage", getAllMessages);
+// router.post('/addMessage', addMessage); 
+
+// general reaction router section ==============================
+router.post('/addReaction', toggleReaction);
+router.get('/getSpecificReactions',getSpecificReactions);
+router.get('/getAllReactions', getTotalReactionsCount)
 
 module.exports = router;
