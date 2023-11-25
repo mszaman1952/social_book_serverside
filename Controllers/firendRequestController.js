@@ -1,5 +1,6 @@
 const userModel = require('../Models/User_Model');
 const FriendRequest = require('../Models/friendRequestModel');
+const Notification = require('../Models/notificationModel');
 
 // send friend request ================================
 
@@ -57,6 +58,17 @@ const sendFriendRequest = async (req, res) => {
         });
 
         await friendRequest.save();
+
+            // Create a notification for the receiver
+    const notification = new Notification({
+        userId: receiverId,
+        message: `${sender.firstName} ${sender.lastName} sent you a friend request.`,
+        type: 'FriendRequest',
+        senderId: senderId,
+      });
+  
+      await notification.save();
+  
 
         // Check if the sender has already received a friend request from the receiver
         const hasReceivedRequest = sender.friendRequests.some((requestId) =>
@@ -500,29 +512,6 @@ const findFriends = async (req, res) => {
 };
 
 // get mutual friends ========================================
-// const getMutualFriends = async (req, res) => {
-//   try {
-//     const { userId1, userId2 } = req.params;
-
-//     // Fetch user data for both users
-//     const user1 = await userModel.findById(userId1);
-//     const user2 = await userModel.findById(userId2);
-
-//     if (!user1 || !user2) {
-//       return res.status(404).json({ error: 'Users not found' });
-//     }
-
-//     // Find common friends by comparing friend lists
-//     const mutualFriends = user1.friends.filter(friendId =>
-//       user2.friends.includes(friendId)
-//     );
-
-//     res.status(200).json(mutualFriends);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Error fetching mutual friends');
-//   }
-// };
 const getMutualFriends = async (req, res) => {
     try {
       const { userId1, userId2 } = req.params;

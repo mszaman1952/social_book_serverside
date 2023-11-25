@@ -100,7 +100,16 @@ const {
     getSpecificReactions, 
     getTotalReactionsCount
 } = require('../Controllers/generalReactionController');
-const { sharePost } = require('../Controllers/sharePostController');
+
+// share post controller import ===================================
+const { 
+    sharePost 
+} = require('../Controllers/sharePostController');
+
+// notification controller import ===============================
+const { 
+    markAllNotificationsAsRead 
+} = require('../Controllers/notificationController');
 
 // import message controller ============================
 // const { 
@@ -153,6 +162,9 @@ router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
 // general reaction router section ==============================
 router.post('/addReaction', toggleReaction);
 router.get('/getSpecificReactions',getSpecificReactions);
-router.get('/getAllReactions', getTotalReactionsCount)
+router.get('/getAllReactions', getTotalReactionsCount);
+
+// notification router import section ========================
+router.get('/getAllNotificationAsRead/:userId', markAllNotificationsAsRead)
 
 module.exports = router;

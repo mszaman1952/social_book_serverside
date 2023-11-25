@@ -3,6 +3,7 @@ const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const Post = require("../Models/postModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
+const Notification = require("../Models/notificationModel");
 const { clientError } = require("./error");
 
 // create comment =====================
@@ -11,7 +12,8 @@ const createComment = async (req, res) => {
         const {
             userId,
             postId,
-            commentContent
+            commentContent,
+            postOwnerId
         } = req.body;
 
         const user = await userModel.findById(userId);
@@ -31,9 +33,6 @@ const createComment = async (req, res) => {
             });
             return;
         }
-
-        console.log(req.files)
-
          // Find the image file 
          const imageFile = req.files.find(file => file.fieldname === 'image');
 
@@ -54,6 +53,17 @@ const createComment = async (req, res) => {
             // Assign video filename if found, else null
             video: videoFile ? videoFile.filename : null,
         }).save();
+
+            // Create a notification for the post owner (assuming the post owner is the recipient)
+    const newNotification = new Notification({
+        userId: postOwnerId, 
+        message: 'You have a new comment on your post.',
+        type: 'Comment',
+        senderId: userId, 
+      });
+  
+      await newNotification.save();
+  
 
         res.status(201).json({
             status: 'Success',
