@@ -89,7 +89,9 @@ const {
     getAllFriends,
     getAllFriendRequestsReceived,
     cancelSentFriendRequest,
-    findFriends
+    findFriends,
+    getMutualFriends,
+    peopleYouKnowMe
 } = require('../Controllers/firendRequestController');
 
 // general reaction controller import ==========================
@@ -133,7 +135,7 @@ router.put('/updateReplyInReply/:id', updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
 
 // friend request section ================================
-router.post('/sendFriendRequest/:id/:idt', sendFriendRequest);
+router.post('/sendFriendRequest', sendFriendRequest);
 router.post('/acceptFriendRequest', acceptFriendRequest);
 router.post('/rejectFriendRequest', rejectFriendRequest);
 router.post('/unfriend', unfriend);
@@ -141,6 +143,8 @@ router.get('/allFriends', getAllFriends);
 router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
 router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
 router.get('/findFriend', findFriends);
+router.get('/getMutualFriends/:userId1/:userId2', getMutualFriends);
+router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
 
 // message route endpoint section ============================
 // router.get("/getMessage", getAllMessages);

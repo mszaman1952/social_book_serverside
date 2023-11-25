@@ -14,6 +14,14 @@ const sendFriendRequest = async (req, res) => {
         const sender = await userModel.findById(senderId);
         const receiver = await userModel.findById(receiverId);
 
+        // Check if the sender and receiver are the same user
+        if (senderId === receiverId) {
+            return res.status(400).json({
+                status: 'failed',
+                message: 'Cannot send friend request to yourself',
+            });
+        }
+
         if (!sender || !receiver) {
             return res.status(404).json({
                 status: 'failed',
@@ -83,13 +91,10 @@ const sendFriendRequest = async (req, res) => {
     }
 };
 
-// accept friend request ===========================
+// accept friend request ==========================
 const acceptFriendRequest = async (req, res) => {
     try {
-        const {
-            userId,
-            friendRequestId
-        } = req.body;
+        const { userId, friendRequestId } = req.body;
 
         // Find the user who is accepting the friend request
         const acceptingUser = await userModel.findById(userId);
@@ -118,6 +123,14 @@ const acceptFriendRequest = async (req, res) => {
             return res.status(400).json({
                 status: 'failed',
                 message: 'Friend request already accepted',
+            });
+        }
+
+        // Check if the accepting user is already a friend of the sender
+        if (acceptingUser.friends.includes(friendRequest.sender)) {
+            return res.status(400).json({
+                status: 'failed',
+                message: 'You are already friends with this user',
             });
         }
 
@@ -163,6 +176,7 @@ const acceptFriendRequest = async (req, res) => {
         });
     }
 };
+
 
 // reject friend request ================================
 const rejectFriendRequest = async (req, res) => {
@@ -485,6 +499,105 @@ const findFriends = async (req, res) => {
   }
 };
 
+// get mutual friends ========================================
+// const getMutualFriends = async (req, res) => {
+//   try {
+//     const { userId1, userId2 } = req.params;
+
+//     // Fetch user data for both users
+//     const user1 = await userModel.findById(userId1);
+//     const user2 = await userModel.findById(userId2);
+
+//     if (!user1 || !user2) {
+//       return res.status(404).json({ error: 'Users not found' });
+//     }
+
+//     // Find common friends by comparing friend lists
+//     const mutualFriends = user1.friends.filter(friendId =>
+//       user2.friends.includes(friendId)
+//     );
+
+//     res.status(200).json(mutualFriends);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Error fetching mutual friends');
+//   }
+// };
+const getMutualFriends = async (req, res) => {
+    try {
+      const { userId1, userId2 } = req.params;
+  
+      // Fetch user data for both users
+      const user1 = await userModel.findById(userId1);
+      const user2 = await userModel.findById(userId2);
+  
+      if (!user1 || !user2) {
+        return res.status(404).json({ error: 'Users not found' });
+      }
+  
+      // Find common friends by comparing friend lists
+      const mutualFriendsIds = user1.friends.filter(friendId =>
+        user2.friends.includes(friendId)
+      );
+  
+      // Fetch mutual friends' information, including id and name
+      const mutualFriendsInfo = await userModel.find({ _id: { $in: mutualFriendsIds } })
+        .select('_id')
+        .select("userName");
+  
+      res.status(200).json(mutualFriendsInfo);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error fetching mutual friends');
+    }
+  };  
+  
+// people you know me===================================
+const peopleYouKnowMe = async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      // Find the user
+      const currentUser = await userModel.findById(userId);
+  
+      if (!currentUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // Get the current user's friends
+      const currentFriends = currentUser.friends;
+  
+      // Get the current user's sent and received friend requests
+      const sentFriendRequests = await FriendRequest.find({ sender: userId });
+      const receivedFriendRequests = await FriendRequest.find({ receiver: userId });
+  
+      // Combine friend requests to get all pending requests
+      const allFriendRequests = [...sentFriendRequests, ...receivedFriendRequests];
+  
+      // Extract user ids from friend requests
+      const friendRequestUserIds = allFriendRequests.map(request => request.sender.toString());
+  
+      // Find people who are not friends and not in friend requests
+      const potentialFriends = await userModel.find({
+        $and: [
+          { _id: { $ne: userId } }, 
+          { _id: { $nin: currentFriends } }, 
+          { _id: { $nin: friendRequestUserIds } },
+        ],
+      }).limit(10);
+  
+      // Simplify the response to only id and userName
+      const simplifiedResponse = potentialFriends.map(user => ({
+        _id: user._id,
+        userName: user.userName,
+      }));
+  
+      res.json(simplifiedResponse);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }; 
 
 module.exports = {
     sendFriendRequest,
@@ -495,5 +608,7 @@ module.exports = {
     getAllFriendRequestsReceived,
     getSentFriendRequests,
     cancelSentFriendRequest,
-    findFriends
+    findFriends,
+    getMutualFriends,
+    peopleYouKnowMe
 };
