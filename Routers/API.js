@@ -35,9 +35,6 @@ router.get('/block-user', tokenVerify, block_usre_get);
 router.get('/save-post', tokenVerify, save_post_get);
 router.get('/pin-post', tokenVerify, pin_post_get);
 router.get('/view-single-profile/:id', tokenVerify, viewSingleProfile);
-router.post('/registration', registration);
-router.post('/activate/:id', activate);
-router.post('/login', login);
 
 // post controller import ==========================
 const {
@@ -110,6 +107,7 @@ const {
 const { 
     markAllNotificationsAsRead 
 } = require('../Controllers/notificationController');
+const { followUser, unfollowUser, getAllFollowing, getAllFollowers } = require('../Controllers/followerController');
 
 // import message controller ============================
 // const { 
@@ -144,27 +142,44 @@ router.put('/updateReplyInReply/:id', updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
 
 // friend request section ================================
-router.post('/sendFriendRequest', sendFriendRequest);
-router.post('/acceptFriendRequest', acceptFriendRequest);
-router.post('/rejectFriendRequest', rejectFriendRequest);
-router.post('/unfriend', unfriend);
-router.get('/allFriends', getAllFriends);
-router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
-router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
-router.get('/findFriend', findFriends);
-router.get('/getMutualFriends/:userId1/:userId2', getMutualFriends);
-router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
+router.post('/sendFriendRequest', tokenVerify, sendFriendRequest);
+router.post('/acceptFriendRequest',tokenVerify, acceptFriendRequest);
+router.post('/rejectFriendRequest',tokenVerify, rejectFriendRequest);
+router.post('/unfriend',tokenVerify, unfriend);
+router.get('/allFriends',tokenVerify, getAllFriends);
+router.get('/getAllFriendRequest',tokenVerify, getAllFriendRequestsReceived);
+router.post('/cancelSentFriendRequest',tokenVerify, cancelSentFriendRequest);
+router.get('/findFriend',tokenVerify, findFriends);
+router.get('/getMutualFriends/:userId1/:userId2',tokenVerify, getMutualFriends);
+router.get('/peopleYouKnowMe/:userId',tokenVerify, peopleYouKnowMe);
 
 // message route endpoint section ============================
 // router.get("/getMessage", getAllMessages);
 // router.post('/addMessage', addMessage); 
 
 // general reaction router section ==============================
-router.post('/addReaction', toggleReaction);
-router.get('/getSpecificReactions',getSpecificReactions);
-router.get('/getAllReactions', getTotalReactionsCount);
+router.post('/addReaction', tokenVerify, toggleReaction);
+router.get('/getSpecificReactions', tokenVerify, getSpecificReactions);
+router.get('/getAllReactions', tokenVerify, getTotalReactionsCount);
 
 // notification router import section ========================
-router.get('/getAllNotificationAsRead/:userId', markAllNotificationsAsRead)
+router.get('/getAllNotificationAsRead/:userId', tokenVerify, markAllNotificationsAsRead);
+
+// follow router section =======================================
+router.post("/addFollow", tokenVerify, followUser);
+router.post("/unFollow", tokenVerify, unfollowUser);
+router.get('/getAllFollowing/:userId', tokenVerify, getAllFollowing);
+router.get('/getAllFollowers/:userId', tokenVerify, getAllFollowers);
 
 module.exports = router;
+
+// ==============================================================
+
+// const { create_post, update_post } = require('../Controllers/Post');
+// const postUpload = require('../Helpers/PostUpload');
+
+
+// post  section.......
+// router.post('/create-post',tokenVerify,postUpload,create_post);
+// router.post('/update-post/:id',tokenVerify,update_post);
+

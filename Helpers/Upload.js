@@ -1,4 +1,4 @@
-const multer = require('multer');
+const multer = require("multer");
 
 const uploads = (req, res, next) => {
     multer({

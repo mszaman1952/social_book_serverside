@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const friendRequestSchema = new mongoose.Schema({
     sender: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'userProfile',
         required: true,
     },
     receiver: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'userProfile',
         required: true,
     },
     status: {

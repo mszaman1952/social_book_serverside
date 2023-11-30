@@ -111,8 +111,7 @@ exports.registration_user = async (req) => {
         };
     }
 };
-
-
+// active user==================================
 exports.activate_user = async (req) => {
     try {
 
@@ -194,6 +193,7 @@ exports.activate_user = async (req) => {
     }
 };
 
+// usesr login=============================================
 exports.login_user = async (req) => {
     try {
 
@@ -271,7 +271,7 @@ exports.login_user = async (req) => {
     }
 };
 
-
+// forget password ============================================
 exports.forget_password = async (req) => {
     try {
 
@@ -302,7 +302,7 @@ exports.forget_password = async (req) => {
             };
         };
 
-        if (findUser.activied == false) {
+        if (findUser.activated == false) {
             return {
                 status: "Fail",
                 message: "please activated your account first."
@@ -331,7 +331,7 @@ exports.forget_password = async (req) => {
     }
 };
 
-
+// set password=================================================
 exports.set_password = async (req) => {
     try {
         const {
@@ -395,12 +395,7 @@ exports.set_password = async (req) => {
     }
 };
 
-
-
-
-// user profile.......
-
-
+// user profile.......=====================================
 exports.create_profile = async (req) => {
     try {
 
@@ -455,10 +450,10 @@ exports.create_profile = async (req) => {
             validateField(home_town, 3, 50, "home_town"),
             validateField(gender, 3, 50, "gender"),
             validateField(relationship, 3, 50, "relationship"),
-            validateField(instagram, 3, 50, "instagram"),
-            validateField(twitter, 3, 50, "twitter"),
-            validateField(discord, 3, 50, "discord"),
-            validateField(telegram, 3, 50, "telegram")
+            // validateField(instagram, 3, 50, "instagram"),
+            // validateField(twitter, 3, 50, "twitter"),
+            // validateField(discord, 3, 50, "discord"),
+            // validateField(telegram, 3, 50, "telegram")
         ];
 
         const failedValidation = validationResults.find(result => result !== null);
@@ -519,8 +514,7 @@ exports.create_profile = async (req) => {
     }
 };
 
-
-
+// reset profile============================================
 exports.reset_profile = async (req) => {
     try {
 
@@ -566,7 +560,7 @@ exports.reset_profile = async (req) => {
     }
 };
 
-
+// profile block pin save =================================
 exports.profile_block_pin_save = async (req) => {
     try {
 
@@ -642,8 +636,7 @@ exports.profile_block_pin_save = async (req) => {
     }
 };
 
-
-
+// block user get =================================================
 exports.block_usre_get = async (req) => {
     try {
 
@@ -698,7 +691,7 @@ exports.block_usre_get = async (req) => {
     }
 };
 
-
+// save post get =============================================
 exports.save_post_get = async (req) => {
     try {
 
@@ -753,7 +746,7 @@ exports.save_post_get = async (req) => {
     }
 };
 
-
+// exports pin post===============================================
 exports.pin_post_get = async (req) => {
     try {
 
@@ -808,7 +801,7 @@ exports.pin_post_get = async (req) => {
     }
 };
 
-
+// view single profile===================================
 exports.viewSingleProfile = async (req) => {
     try {
 

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const notificationSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'userProfile',
     required: true,
   },
   message: {
@@ -18,7 +18,7 @@ const notificationSchema = new mongoose.Schema({
   },
   senderId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'userProfile',
   },
   read: {
     type: Boolean,

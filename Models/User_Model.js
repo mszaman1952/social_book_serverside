@@ -40,19 +40,6 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    friendRequests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'FriendRequest',
-    }, ],
-    friends: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    }, ],
-    sentFriendRequests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'FriendRequest',
-    }, ],
-
 }, {
     timestamps: true,
     versionKey: false

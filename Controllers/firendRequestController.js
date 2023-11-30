@@ -1,4 +1,4 @@
-const userModel = require('../Models/User_Model');
+const userProfileModel = require('../Models/user_profile_Model');
 const FriendRequest = require('../Models/friendRequestModel');
 const Notification = require('../Models/notificationModel');
 
@@ -12,8 +12,8 @@ const sendFriendRequest = async (req, res) => {
         } = req.body;
 
         // Check if the sender and receiver exist
-        const sender = await userModel.findById(senderId);
-        const receiver = await userModel.findById(receiverId);
+        const sender = await userProfileModel.findById(senderId);
+        const receiver = await userProfileModel.findById(receiverId);
 
         // Check if the sender and receiver are the same user
         if (senderId === receiverId) {
@@ -62,7 +62,7 @@ const sendFriendRequest = async (req, res) => {
             // Create a notification for the receiver
     const notification = new Notification({
         userId: receiverId,
-        message: `${sender.firstName} ${sender.lastName} sent you a friend request.`,
+        message: `${sender.userName} sent you a friend request.`,
         type: 'FriendRequest',
         senderId: senderId,
       });
@@ -109,7 +109,7 @@ const acceptFriendRequest = async (req, res) => {
         const { userId, friendRequestId } = req.body;
 
         // Find the user who is accepting the friend request
-        const acceptingUser = await userModel.findById(userId);
+        const acceptingUser = await userProfileModel.findById(userId);
 
         // Check if the user exists
         if (!acceptingUser) {
@@ -158,7 +158,7 @@ const acceptFriendRequest = async (req, res) => {
         await acceptingUser.save();
 
         // Update sender's friend list
-        const senderUser = await userModel.findById(friendRequest.sender);
+        const senderUser = await userProfileModel.findById(friendRequest.sender);
         senderUser.friends.push(acceptingUser._id);
 
         // Remove friendRequestId from the sender's friendRequests array
@@ -199,7 +199,7 @@ const rejectFriendRequest = async (req, res) => {
         } = req.body;
 
         // Find the user who is rejecting the friend request
-        const rejectingUser = await userModel.findById(userId);
+        const rejectingUser = await userProfileModel.findById(userId);
 
         // Check if the user exists
         if (!rejectingUser) {
@@ -237,7 +237,7 @@ const rejectFriendRequest = async (req, res) => {
         await rejectingUser.save();
 
         // Remove friendRequestId from the sender's friendRequests array
-        const senderUser = await userModel.findById(friendRequest.sender);
+        const senderUser = await userProfileModel.findById(friendRequest.sender);
         senderUser.sentFriendRequests = senderUser.sentFriendRequests.filter(
             (requestId) => requestId.toString() !== friendRequestId
         );
@@ -274,8 +274,8 @@ const unfriend = async (req, res) => {
         } = req.body;
 
         // Find the user and friend by their IDs
-        const user = await userModel.findById(userId);
-        const friend = await userModel.findById(friendId);
+        const user = await userProfileModel.findById(userId);
+        const friend = await userProfileModel.findById(friendId);
 
         // Check if both users exist
         if (!user || !friend) {
@@ -321,10 +321,9 @@ const getAllFriends = async (req, res) => {
             userId
         } = req.body;
         // Find the user by ID and join with friends
-        const user = await userModel.findById(userId)
+        const user = await userProfileModel.findById(userId)
             .populate('friends')
             .exec();
-
         // Check if the user exists
         if (!user) {
             return res.status(404).json({
@@ -335,11 +334,8 @@ const getAllFriends = async (req, res) => {
 
         const friends = (user?.friends).map((friend) => ({
             _id: friend._id,
-            firstName: friend.firstName,
-            lastName: friend.lastName,
-            email: friend.email,
+            userName: friend.userName,
         }));
-
         // Check if the user has friends
         if (!user.friends) {
             return res.status(200).json({
@@ -371,7 +367,7 @@ const getAllFriendRequestsReceived = async (req, res) => {
         } = req.body;
 
         // Find the user by ID and populate the 'friendRequests' field
-        const user = await userModel.findById(userId).populate('friendRequests');
+        const user = await userProfileModel.findById(userId).populate('friendRequests');
 
         // Check if the user exists
         if (!user) {
@@ -406,7 +402,7 @@ const getSentFriendRequests = async (req, res) => {
         } = req.params;
 
         // Find the user by ID and populate the 'sentFriendRequests' field
-        const user = await userModel.findById(userId).populate('sentFriendRequests');
+        const user = await userProfileModel.findById(userId).populate('sentFriendRequests');
 
         // Check if the user exists
         if (!user) {
@@ -443,7 +439,7 @@ const cancelSentFriendRequest = async (req, res) => {
         } = req.body;
 
         // Get information about the sender from the model
-        const sender = await userModel.findById(senderId);
+        const sender = await userProfileModel.findById(senderId);
 
         if (!sender) {
             return res.status(404).json({
@@ -466,7 +462,7 @@ const cancelSentFriendRequest = async (req, res) => {
         sender.sentFriendRequests = sender.sentFriendRequests.filter(id => id.toString() !== friendRequest._id.toString());
 
         // Get information about the receiver from the model
-        const receiver = await userModel.findById(friendRequest.receiver);
+        const receiver = await userProfileModel.findById(friendRequest.receiver);
 
         if (receiver) {
             // Remove the friend request ID from the receiver's friendRequests array
@@ -497,7 +493,7 @@ const findFriends = async (req, res) => {
     const { searchQuery } = req.body;
 
     // Use a MongoDB query to find friends based on the search criteria
-    const friends = await userModel.find({
+    const friends = await userProfileModel.find({
       $or: [
         { userName: { $regex: searchQuery, $options: 'i' } }, 
         { email: { $regex: searchQuery, $options: 'i' } }, 
@@ -517,8 +513,8 @@ const getMutualFriends = async (req, res) => {
       const { userId1, userId2 } = req.params;
   
       // Fetch user data for both users
-      const user1 = await userModel.findById(userId1);
-      const user2 = await userModel.findById(userId2);
+      const user1 = await userProfileModel.findById(userId1);
+      const user2 = await userProfileModel.findById(userId2);
   
       if (!user1 || !user2) {
         return res.status(404).json({ error: 'Users not found' });
@@ -530,7 +526,7 @@ const getMutualFriends = async (req, res) => {
       );
   
       // Fetch mutual friends' information, including id and name
-      const mutualFriendsInfo = await userModel.find({ _id: { $in: mutualFriendsIds } })
+      const mutualFriendsInfo = await userProfileModel.find({ _id: { $in: mutualFriendsIds } })
         .select('_id')
         .select("userName");
   
@@ -547,12 +543,12 @@ const peopleYouKnowMe = async (req, res) => {
       const { userId } = req.params;
   
       // Find the user
-      const currentUser = await userModel.findById(userId);
+      const currentUser = await userProfileModel.findById(userId);
   
       if (!currentUser) {
         return res.status(404).json({ error: 'User not found' });
       }
-  
+   
       // Get the current user's friends
       const currentFriends = currentUser.friends;
   
@@ -567,7 +563,7 @@ const peopleYouKnowMe = async (req, res) => {
       const friendRequestUserIds = allFriendRequests.map(request => request.sender.toString());
   
       // Find people who are not friends and not in friend requests
-      const potentialFriends = await userModel.find({
+      const potentialFriends = await userProfileModel.find({
         $and: [
           { _id: { $ne: userId } }, 
           { _id: { $nin: currentFriends } }, 

@@ -99,26 +99,46 @@ const userSchema = new Schema({
     },
     block_user: [{
         type: Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'userProfile'
     }],
     save_post: [{
         type: Schema.Types.ObjectId,
-        ref: 'posts'
+        ref: 'Post'
     }],
     pin_post: [{
         type: Schema.Types.ObjectId,
-        ref: 'posts'
+        ref: 'Post'
     }],
     userId: {
         type: Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'userProfile',
         required: true
-    }
+    },
+    friendRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'FriendRequest',
+    }, ],
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userProfile',
+    }, ],
+    sentFriendRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'FriendRequest',
+    }, ],
+    followers: [{ 
+        type: mongoose.Schema.Types.ObjectId,
+         ref: 'userProfile' 
+        }],
+    following: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'userProfile' 
+    }],
 }, {
     timestamps: true,
     versionKey: false
 });
 
-const userProfileModel = model('user-profiles', userSchema);
+const userProfileModel = model('userProfile', userSchema);
 
 module.exports = userProfileModel;

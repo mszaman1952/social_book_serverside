@@ -8,12 +8,12 @@ const commentReplySchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "User"
+        ref: "userProfile"
     },
     commentId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "comment"
+        ref: "Comment"
     },
     commentReplyContent: {
         type: String,

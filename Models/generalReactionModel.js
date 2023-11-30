@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const generalReactionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'userProfile',
     required: true,
   },
   targetType: {
