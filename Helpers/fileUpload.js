@@ -1,10 +1,10 @@
 const multer = require('multer');
 
-const postUpload = (req, res, next) => {
+const fileUpload = (req, res, next) => {
   multer({
     storage:multer.diskStorage({}),
     limits: {
-      fileSize:  1024 * 1024 * 5, // 5MB
+      fileSize:  1024 * 1024 * 3, // 3MB
     },
     fileFilter: (req, file, cb) => {
       if (
@@ -33,4 +33,4 @@ const postUpload = (req, res, next) => {
   });
 };
 
-module.exports = postUpload;
+module.exports = fileUpload;

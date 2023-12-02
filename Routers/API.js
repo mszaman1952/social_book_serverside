@@ -46,12 +46,12 @@ const {
 } = require('../Controllers/postController');
 
 // file upload middleware import============================
-const { 
-    postUpload, 
-    commentUpload, 
-    replyUpload, 
-    nestedReplyUpload
-} = require('../middleware/uploadFile');
+// const { 
+//     postUpload, 
+//     commentUpload, 
+//     replyUpload, 
+//     nestedReplyUpload
+// } = require('../middleware/uploadFile');
 
 // comment controller import==================================
 const {
@@ -107,7 +107,15 @@ const {
 const { 
     markAllNotificationsAsRead 
 } = require('../Controllers/notificationController');
-const { followUser, unfollowUser, getAllFollowing, getAllFollowers } = require('../Controllers/followerController');
+const { 
+    followUser, 
+    unfollowUser, 
+    getAllFollowing, 
+    getAllFollowers 
+} = require('../Controllers/followerController');
+
+const postUpload = require('../Helpers/PostUpload');
+const fileUpload = require('../Helpers/fileUpload');
 
 // import message controller ============================
 // const { 
@@ -116,27 +124,27 @@ const { followUser, unfollowUser, getAllFollowing, getAllFollowers } = require('
 // } = require('../Controllers/messageController');
 
 // post Rout section=========================================
-router.get('/getPosts', getPosts);
-router.get('/getPost/:id', getPost);
-router.post('/addPost', postUpload.any(), addPost);
-router.put('/updatePost/:id', postUpload.any(), updatePost);
-router.delete('/deletePost/:id', deletePost);
+router.get('/getPosts',tokenVerify, getPosts);
+router.get('/getPost/:id',tokenVerify, getPost);
+router.post('/addPost',tokenVerify, postUpload, addPost);
+router.put('/updatePost/:id',tokenVerify, postUpload, updatePost);
+router.delete('/deletePost/:id',tokenVerify, deletePost);
 router.post('/sharePost',tokenVerify, sharePost);
 
 // comment  section==============================================
-router.post('/createComment',commentUpload.any(), createComment);
-router.get('/readComment/:id', readComment);
-router.put('/updateComment/:id', commentUpload.any(),updateComment);
-router.delete('/deleteComment/:id', deleteComment);
+router.post('/createComment',tokenVerify, fileUpload, createComment);
+router.get('/readComment/:id',tokenVerify, readComment);
+router.put('/updateComment/:id',tokenVerify,fileUpload, updateComment);
+router.delete('/deleteComment/:id',tokenVerify, deleteComment);
 
 // reply section==============================================
-router.post('/createCommentReply',replyUpload.any(), commentReplyCreate);
+router.post('/createCommentReply', commentReplyCreate);
 router.get('/getCommentReply/:id', getCommentReply);
 router.put('/updateCommentReply/:id', updateCommentReply);
 router.delete('/deleteCommentReply/:id', deleteCommentReply);
 
 // reply in reply section===============================
-router.post('/createReplyInReply',nestedReplyUpload.any(), createReplyInReply);
+router.post('/createReplyInReply', createReplyInReply);
 router.get('/getReplyInReply/:id', getReplyInReply);
 router.put('/updateReplyInReply/:id', updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', deleteReplyInReply);

@@ -1,10 +1,29 @@
-const userModel = require("../Models/User_Model");
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const Post = require("../Models/postModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
 const Notification = require("../Models/notificationModel");
 const { clientError } = require("./error");
+const userProfileModel = require('../Models/user_profile_Model');
+const cloudinary  = require("../Helpers/Cloudinary");
+
+
+// Function to upload a file to Cloudinary
+const uploadToCloudinary = async (file) => {
+    try {
+        const result = await cloudinary.uploader.upload(file.path, {
+            resource_type: 'auto',
+        });
+        console.log('Cloudinary upload result:', result);
+        return {
+            public_id: result.public_id,
+            secure_url: result.secure_url,
+        };
+    } catch (error) {
+        console.error('Error uploading file to Cloudinary:', error);
+        throw new Error(`Error uploading file to Cloudinary: ${error.message}`);
+    }
+};
 
 // create comment =====================
 const createComment = async (req, res) => {
@@ -16,70 +35,78 @@ const createComment = async (req, res) => {
             postOwnerId
         } = req.body;
 
-        const user = await userModel.findById(userId);
+        const user = await userProfileModel.findById(userId);
         if (!user) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: 'failed',
                 message: 'User not found',
             });
-            return;
         }
 
         const post = await Post.findById(postId);
         if (!post) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: 'failed',
                 message: 'Post not found',
             });
-            return;
         }
-         // Find the image file 
-         const imageFile = req.files.find(file => file.fieldname === 'image');
 
-         // Find the video file
-         const videoFile = req.files.find(file => file.fieldname === 'video');
- 
-         // Check if at least one of content, image, or video is provided
-         if (!commentContent && !imageFile && !videoFile) {
-             return await clientError(res, 400, 'At least one of content, image, or video is required');
-         }
- 
+        const imgVideoFile = req.files['img_video'] ? req.files['img_video'][0] : null;
+
+        // Check if at least one of content, image, or video is provided
+        if (!commentContent && !imgVideoFile) {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'At least one of content, image, or video is required',
+            });
+        }
+
+        // Upload img_video to Cloudinary if it exists
+        let imgVideoUploadResult = null;
+        if (imgVideoFile) {
+            try {
+                imgVideoUploadResult = await uploadToCloudinary(imgVideoFile);
+            } catch (uploadError) {
+                return res.status(500).json({
+                    status: 'Fail',
+                    message: 'Error uploading img_video to Cloudinary', uploadError,
+                });
+            }
+        }
+
         const newComment = await Comment({
             userId,
             postId,
-            commentContent : commentContent ? commentContent : null,
-            // Assign image filename if found, else null
-            image: imageFile ? imageFile.filename : null,
-            // Assign video filename if found, else null
-            video: videoFile ? videoFile.filename : null,
+            commentContent: commentContent ? commentContent : null,
+            img_video: imgVideoUploadResult ? imgVideoUploadResult.secure_url : null,
         }).save();
 
-            // Create a notification for the post owner (assuming the post owner is the recipient)
-    const newNotification = new Notification({
-        userId: postOwnerId, 
-        message: 'You have a new comment on your post.',
-        type: 'Comment',
-        senderId: userId, 
-      });
-  
-      await newNotification.save();
-  
+        const newNotification = new Notification({
+            userId: postOwnerId,
+            message: 'You have a new comment on your post.',
+            type: 'Comment',
+            senderId: userId,
+        });
 
-        res.status(201).json({
+        await newNotification.save();
+
+        return res.status(201).json({
             status: 'Success',
             data: newComment,
         });
     } catch (error) {
-        res.status(500).json({
-            status: false,
-            message: error.message,
+        console.error('Unexpected error in createComment:', error);
+        return res.status(500).json({
+            status: 'Fail',
+            message: 'Unexpected error',
         });
     }
 };
 
 
-// read Comment ===========================
 
+
+// read Comment ===========================
 const readComment = async (req, res) => {
     try {
         const id = req.params.id;
@@ -106,36 +133,40 @@ const readComment = async (req, res) => {
     }
 }
 
-// update Comment=====================
-
+// update Comment===============================
 const updateComment = async (req, res) => {
     try {
         const id = req.params.id;
         const { userId } = req.body;
-        
+
         const comment = await Comment.findOne({
-            _id: id, 
-            userId: userId, // Add a check for the user ID
+            _id: id,
+            userId: userId,
         });
+
         if (!comment) {
             return await clientError(res, 404, 'Comment or user with this id was not found');
         }
-        const imageFile = req.files.find(file => file.fieldname === 'image');
-        const videoFile = req.files.find(file => file.fieldname === 'video');
+
+        const img_videoFile = req.files['img_video'] ? req.files['img_video'][0] : null;
 
         const updateFields = {
-            content: req.body.content ? req.body.content : null,
-            image: imageFile ? imageFile.filename : null,
-            video: videoFile ? videoFile.filename : null,
+            commentContent: req.body.commentContent ? req.body.commentContent : comment.commentContent || null,
+            img_video: img_videoFile ? (await uploadToCloudinary(img_videoFile)).secure_url : comment.img_video || null,
         };
 
-        const updatedCommentData = await Comment.updateOne({
-            _id: id
-        }, {
-            $set: updateFields
-        });
+        const updatedCommentData = await Comment.updateOne(
+            { _id: id },
+            {
+                $set: updateFields,
+            },
+            {
+                new : true
+            }
+        );
+
         res.status(200).json({
-            status: "Success",
+            status: 'Success',
             updatedCommentData,
         });
     } catch (error) {
@@ -144,7 +175,7 @@ const updateComment = async (req, res) => {
             message: error.message,
         });
     }
-}
+};
 
 // comment delete =========================
 const deleteComment = async (req, res) => {

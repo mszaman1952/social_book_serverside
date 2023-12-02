@@ -19,11 +19,8 @@ const commentSchema = new Schema({
         type: String,
         min: [3, 'comment Content Minimum 3 charecter is required']
     },
-    image: {
+    img_video: {
         type: String
-    },
-    video: {
-        tryp: String
     },
     reactionCount: {
         type: Number,

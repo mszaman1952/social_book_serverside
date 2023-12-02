@@ -9,7 +9,7 @@ const { ObjectId } = mongoose.Schema.Types;
 
 // Define the schema for posts
 const postsSchema = new Schema({
-    userId: {
+    profileId: {
         type: ObjectId,
         required: true,
         ref: "userProfile"
@@ -20,13 +20,6 @@ const postsSchema = new Schema({
         trim: true,
         maxlength: [1000, "Post content maximum 1000 characters"]
     },
-    // Define image and video properties (commented out for now)
-    // image: {
-    //     type: String,
-    // },
-    // video: {
-    //     type: String,
-    // },
     // Define image_video array with public_id and imgUrl properties
     image_video: [
         {

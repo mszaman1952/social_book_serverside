@@ -13,7 +13,7 @@ const notificationSchema = new mongoose.Schema({
   link: String,
   type: {
     type: String,
-    enum: ['FriendRequest', 'message',"Comment","CommentReply","ReplyInReply"], 
+    enum: ['FriendRequest', 'Message',"Comment","CommentReply","ReplyInReply", "Post"], 
     required: true,
   },
   senderId: {

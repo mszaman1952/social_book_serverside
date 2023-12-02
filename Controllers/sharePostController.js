@@ -1,5 +1,3 @@
-// sharePostController.js
-
 const Post = require('../Models/postModel');
 const Share = require('../Models/shareModel'); // Only if you created a separate Share model
 
