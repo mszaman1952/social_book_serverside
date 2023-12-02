@@ -5,7 +5,9 @@ const {
 } = require('mongoose');
 
 // Destructure the ObjectId from mongoose.Schema.Types
-const { ObjectId } = mongoose.Schema.Types;
+const {
+    ObjectId
+} = mongoose.Schema.Types;
 
 // Define the schema for posts
 const postsSchema = new Schema({
@@ -21,27 +23,23 @@ const postsSchema = new Schema({
         maxlength: [1000, "Post content maximum 1000 characters"]
     },
     // Define image_video array with public_id and imgUrl properties
-    image_video: [
-        {
-            public_id: {
-                type: String,
-                trim: true
-            },
-            imgUrl: {
-                type: String,
-                trim: true
-            }
+    image_video: [{
+        public_id: {
+            type: String,
+            trim: true
+        },
+        imgUrl: {
+            type: String,
+            trim: true
         }
-    ],
+    }],
     // Define tag_friends array with ID property
-    tag_friends: [
-        {
-            ID: {
-                type: ObjectId,
-                trim: true
-            }
+    tag_friends: [{
+        ID: {
+            type: ObjectId,
+            trim: true
         }
-    ],
+    }],
     publics: {
         type: Boolean,
         trim: true,
@@ -53,37 +51,44 @@ const postsSchema = new Schema({
         default: true
     },
     // Define hide_profileId array with ID property
-    hide_profileId: [
-        {
-            ID: {
-                type: ObjectId,
-                trim: true
-            }
+    hide_profileId: [{
+        ID: {
+            type: ObjectId,
+            trim: true
         }
-    ],
+    }],
     onlyMe: {
         type: Boolean,
         trim: true,
         default: false
     },
     // Define specificShow_profileId array with ID property
-    specificShow_profileId: [
-        {
-            ID: {
-                type: ObjectId,
-                trim: true
-            }
+    specificShow_profileId: [{
+        ID: {
+            type: ObjectId,
+            trim: true
         }
-    ],
+    }],
     reactionCount: {
         type: Number,
         default: 0,
     },
     // Define shares array with user property
-    shares: [{ user: { type: Schema.Types.ObjectId, ref: 'userProfile' } }],
-    shareCount: { type: Number, default: 0 },
+    shares: [{
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'userProfile'
+        }
+    }],
+    shareCount: {
+        type: Number,
+        default: 0
+    },
     // Define shares array with Share model reference
-    shares: [{ type: Schema.Types.ObjectId, ref: 'Share' }],
+    shares: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Share'
+    }],
 }, {
     timestamps: true,
     versionKey: false

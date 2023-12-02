@@ -126,13 +126,13 @@ const userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'FriendRequest',
     }, ],
-    followers: [{ 
+    followers: [{
         type: mongoose.Schema.Types.ObjectId,
-         ref: 'userProfile' 
-        }],
-    following: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'userProfile' 
+        ref: 'userProfile'
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'userProfile'
     }],
 }, {
     timestamps: true,

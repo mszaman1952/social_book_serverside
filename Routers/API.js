@@ -45,14 +45,6 @@ const {
     updatePost
 } = require('../Controllers/postController');
 
-// file upload middleware import============================
-// const { 
-//     postUpload, 
-//     commentUpload, 
-//     replyUpload, 
-//     nestedReplyUpload
-// } = require('../middleware/uploadFile');
-
 // comment controller import==================================
 const {
     createComment,
@@ -92,78 +84,68 @@ const {
 } = require('../Controllers/firendRequestController');
 
 // general reaction controller import ==========================
-const { 
-    toggleReaction, 
-    getSpecificReactions, 
+const {
+    toggleReaction,
+    getSpecificReactions,
     getTotalReactionsCount
 } = require('../Controllers/generalReactionController');
 
 // share post controller import ===================================
-const { 
-    sharePost 
+const {
+    sharePost
 } = require('../Controllers/sharePostController');
 
 // notification controller import ===============================
-const { 
-    markAllNotificationsAsRead 
+const {
+    markAllNotificationsAsRead
 } = require('../Controllers/notificationController');
-const { 
-    followUser, 
-    unfollowUser, 
-    getAllFollowing, 
-    getAllFollowers 
+const {
+    followUser,
+    unfollowUser,
+    getAllFollowing,
+    getAllFollowers
 } = require('../Controllers/followerController');
 
 const postUpload = require('../Helpers/PostUpload');
 const fileUpload = require('../Helpers/fileUpload');
 
-// import message controller ============================
-// const { 
-    // getAllMessages, 
-    // addMessage 
-// } = require('../Controllers/messageController');
-
 // post Rout section=========================================
-router.get('/getPosts',tokenVerify, getPosts);
-router.get('/getPost/:id',tokenVerify, getPost);
-router.post('/addPost',tokenVerify, postUpload, addPost);
-router.put('/updatePost/:id',tokenVerify, postUpload, updatePost);
-router.delete('/deletePost/:id',tokenVerify, deletePost);
-router.post('/sharePost',tokenVerify, sharePost);
+router.get('/getPosts', tokenVerify, getPosts);
+router.get('/getPost/:id', tokenVerify, getPost);
+router.post('/addPost', tokenVerify, postUpload, addPost);
+router.put('/updatePost/:id', tokenVerify, postUpload, updatePost);
+router.delete('/deletePost/:id', tokenVerify, deletePost);
+router.post('/sharePost', tokenVerify, sharePost);
 
 // comment  section==============================================
-router.post('/createComment',tokenVerify, fileUpload, createComment);
-router.get('/readComment/:id',tokenVerify, readComment);
-router.put('/updateComment/:id',tokenVerify,fileUpload, updateComment);
-router.delete('/deleteComment/:id',tokenVerify, deleteComment);
+router.post('/createComment', tokenVerify, fileUpload, createComment);
+router.get('/readComment/:id', tokenVerify, readComment);
+router.put('/updateComment/:id', tokenVerify, fileUpload, updateComment);
+router.delete('/deleteComment/:id', tokenVerify, deleteComment);
 
 // reply section==============================================
-router.post('/createCommentReply', commentReplyCreate);
-router.get('/getCommentReply/:id', getCommentReply);
-router.put('/updateCommentReply/:id', updateCommentReply);
-router.delete('/deleteCommentReply/:id', deleteCommentReply);
+router.post('/createCommentReply/:commentId', tokenVerify, commentReplyCreate);
+router.get('/getCommentReply/:id', tokenVerify, getCommentReply);
+router.put('/updateCommentReply/:id', tokenVerify, updateCommentReply);
+router.delete('/deleteCommentReply/:id', tokenVerify, deleteCommentReply);
 
 // reply in reply section===============================
-router.post('/createReplyInReply', createReplyInReply);
-router.get('/getReplyInReply/:id', getReplyInReply);
-router.put('/updateReplyInReply/:id', updateReplyInReply);
-router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
+router.post('/createReplyInReply', tokenVerify, createReplyInReply);
+router.get('/getReplyInReply/:id', tokenVerify, getReplyInReply);
+router.put('/updateReplyInReply/:id', tokenVerify, updateReplyInReply);
+router.delete('/deleteReplyInReply/:id', tokenVerify, deleteReplyInReply);
 
 // friend request section ================================
 router.post('/sendFriendRequest', tokenVerify, sendFriendRequest);
-router.post('/acceptFriendRequest',tokenVerify, acceptFriendRequest);
-router.post('/rejectFriendRequest',tokenVerify, rejectFriendRequest);
-router.post('/unfriend',tokenVerify, unfriend);
-router.get('/allFriends',tokenVerify, getAllFriends);
-router.get('/getAllFriendRequest',tokenVerify, getAllFriendRequestsReceived);
-router.post('/cancelSentFriendRequest',tokenVerify, cancelSentFriendRequest);
-router.get('/findFriend',tokenVerify, findFriends);
-router.get('/getMutualFriends/:userId1/:userId2',tokenVerify, getMutualFriends);
-router.get('/peopleYouKnowMe/:userId',tokenVerify, peopleYouKnowMe);
-
-// message route endpoint section ============================
-// router.get("/getMessage", getAllMessages);
-// router.post('/addMessage', addMessage); 
+router.post('/acceptFriendRequest', tokenVerify, acceptFriendRequest);
+router.post('/rejectFriendRequest', tokenVerify, rejectFriendRequest);
+router.post('/unfriend', tokenVerify, unfriend);
+router.get('/allFriends', tokenVerify, getAllFriends);
+router.get('/getAllFriendRequest', tokenVerify, getAllFriendRequestsReceived);
+router.post('/cancelSentFriendRequest', tokenVerify, cancelSentFriendRequest);
+router.get('/findFriend', tokenVerify, findFriends);
+router.get('/getMutualFriends/:userId1/:userId2', tokenVerify, getMutualFriends);
+router.get('/peopleYouKnowMe/:userId', tokenVerify, peopleYouKnowMe);
 
 // general reaction router section ==============================
 router.post('/addReaction', tokenVerify, toggleReaction);
@@ -180,14 +162,3 @@ router.get('/getAllFollowing/:userId', tokenVerify, getAllFollowing);
 router.get('/getAllFollowers/:userId', tokenVerify, getAllFollowers);
 
 module.exports = router;
-
-// ==============================================================
-
-// const { create_post, update_post } = require('../Controllers/Post');
-// const postUpload = require('../Helpers/PostUpload');
-
-
-// post  section.......
-// router.post('/create-post',tokenVerify,postUpload,create_post);
-// router.post('/update-post/:id',tokenVerify,update_post);
-

@@ -1,35 +1,31 @@
 const {
     Schema,
-    model,
-    default: mongoose
+    model
 } = require('mongoose');
 
 const commentReplySchema = new Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "userProfile"
     },
     commentId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "Comment"
     },
     commentReplyContent: {
         type: String,
-        min: [3, 'Comment Reply Content minimum 3 charectar required'],
+        min: [3, 'Comment Reply Content minimum 3 characters required'],
         trim: true
     },
-    image: {
-        type: String
-    },
-    video: {
+    img_video: {
         type: String
     },
     reactionCount: {
         type: Number,
         default: 0,
-      },    
+    },
 }, {
     timestamps: true,
     versionKey: false

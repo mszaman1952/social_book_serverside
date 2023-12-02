@@ -3,9 +3,11 @@ const CommentReply = require("../Models/commentReplyModel");
 const Post = require("../Models/postModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
 const Notification = require("../Models/notificationModel");
-const { clientError } = require("./error");
+const {
+    clientError
+} = require("./error");
 const userProfileModel = require('../Models/user_profile_Model');
-const cloudinary  = require("../Helpers/Cloudinary");
+const cloudinary = require("../Helpers/Cloudinary");
 
 
 // Function to upload a file to Cloudinary
@@ -69,7 +71,8 @@ const createComment = async (req, res) => {
             } catch (uploadError) {
                 return res.status(500).json({
                     status: 'Fail',
-                    message: 'Error uploading img_video to Cloudinary', uploadError,
+                    message: 'Error uploading img_video to Cloudinary',
+                    uploadError,
                 });
             }
         }
@@ -137,7 +140,9 @@ const readComment = async (req, res) => {
 const updateComment = async (req, res) => {
     try {
         const id = req.params.id;
-        const { userId } = req.body;
+        const {
+            userId
+        } = req.body;
 
         const comment = await Comment.findOne({
             _id: id,
@@ -155,15 +160,13 @@ const updateComment = async (req, res) => {
             img_video: img_videoFile ? (await uploadToCloudinary(img_videoFile)).secure_url : comment.img_video || null,
         };
 
-        const updatedCommentData = await Comment.updateOne(
-            { _id: id },
-            {
-                $set: updateFields,
-            },
-            {
-                new : true
-            }
-        );
+        const updatedCommentData = await Comment.updateOne({
+            _id: id
+        }, {
+            $set: updateFields,
+        }, {
+            new: true
+        });
 
         res.status(200).json({
             status: 'Success',

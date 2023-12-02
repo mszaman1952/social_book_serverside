@@ -6,7 +6,12 @@ const ReplyInReply = require("../Models/replyInReplyModel");
 // createReplyInReply ===========================
 const createReplyInReply = async (req, res) => {
     try {
-        const { userId, commentId, commentReplyId, replyInReplyContent } = req.body;
+        const {
+            userId,
+            commentId,
+            commentReplyId,
+            replyInReplyContent
+        } = req.body;
 
         // Validation check
         const user = await userModel.findById(userId);

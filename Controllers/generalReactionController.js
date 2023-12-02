@@ -152,12 +152,20 @@ const getSpecificReactions = async (req, res) => {
             targetId
         });
 
-    // finding targeted id for validation check==========
-        const post = await Post.findOne({_id : targetId});
-        const comment = await Comment.findOne({_id : targetId});
-        const reply = await CommentReply.findOne({_id : targetId});
-        const nestedReply = await ReplyInReply.findOne({_id : targetId});
-        
+        // finding targeted id for validation check==========
+        const post = await Post.findOne({
+            _id: targetId
+        });
+        const comment = await Comment.findOne({
+            _id: targetId
+        });
+        const reply = await CommentReply.findOne({
+            _id: targetId
+        });
+        const nestedReply = await ReplyInReply.findOne({
+            _id: targetId
+        });
+
         // validation check ================================
         if (!post && !comment && !reply && !nestedReply) {
             return res.status(404).json({
@@ -165,7 +173,7 @@ const getSpecificReactions = async (req, res) => {
                 message: "Target ID Not Found..."
             });
         }
-                
+
         // Convert reactions to an array of objects
         const reactionArray = reactions.reduce((acc, reaction) => {
             if (!acc.some((obj) => obj.type === reaction.type)) {
@@ -196,16 +204,30 @@ const getSpecificReactions = async (req, res) => {
 // get all reactions....====================================
 
 const getTotalReactionsCount = async (req, res) => {
-  try {
-    const { targetType, targetId } = req.body;
-    const totalReactionsCount = await GeneralReaction.countDocuments({ targetType, targetId });
+    try {
+        const {
+            targetType,
+            targetId
+        } = req.body;
+        const totalReactionsCount = await GeneralReaction.countDocuments({
+            targetType,
+            targetId
+        });
 
-    // finding targeted id for validation check==========
-    const post = await Post.findOne({_id : targetId});
-        const comment = await Comment.findOne({_id : targetId});
-        const reply = await CommentReply.findOne({_id : targetId});
-        const nestedReply = await ReplyInReply.findOne({_id : targetId});
-        
+        // finding targeted id for validation check==========
+        const post = await Post.findOne({
+            _id: targetId
+        });
+        const comment = await Comment.findOne({
+            _id: targetId
+        });
+        const reply = await CommentReply.findOne({
+            _id: targetId
+        });
+        const nestedReply = await ReplyInReply.findOne({
+            _id: targetId
+        });
+
         // validation check ================================
         if (!post && !comment && !reply && !nestedReply) {
             return res.status(404).json({
@@ -213,12 +235,20 @@ const getTotalReactionsCount = async (req, res) => {
                 message: "Target ID Not Found..."
             });
         }
-        
-    res.status(200).json({ success: true, data: { totalReactionsCount } });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Failed to fetch total reactions count' });
-  }
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalReactionsCount
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch total reactions count'
+        });
+    }
 };
 
 module.exports = {

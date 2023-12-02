@@ -25,7 +25,7 @@ const commentSchema = new Schema({
     reactionCount: {
         type: Number,
         default: 0,
-      },    
+    },
 }, {
     timestamps: true,
     versionKey: false
