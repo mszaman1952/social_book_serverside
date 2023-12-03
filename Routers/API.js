@@ -131,10 +131,10 @@ router.put('/updateCommentReply/:id',fileUpload, updateCommentReply);
 router.delete('/deleteCommentReply/:id', deleteCommentReply);
 
 // reply in reply section===============================
-router.post('/createReplyInReply', tokenVerify, createReplyInReply);
-router.get('/getReplyInReply/:id', tokenVerify, getReplyInReply);
-router.put('/updateReplyInReply/:id', tokenVerify, updateReplyInReply);
-router.delete('/deleteReplyInReply/:id', tokenVerify, deleteReplyInReply);
+router.post('/createReplyInReply',fileUpload, createReplyInReply);
+router.get('/getReplyInReply/:id', getReplyInReply);
+router.put('/updateReplyInReply/:id',fileUpload, updateReplyInReply);
+router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
 
 // friend request section ================================
 router.post('/sendFriendRequest', sendFriendRequest);

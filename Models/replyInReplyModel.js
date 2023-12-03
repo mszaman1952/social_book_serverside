@@ -1,10 +1,6 @@
-const {
-    Schema,
-    model,
-    default: mongoose
-} = require('mongoose');
+const mongoose = require('mongoose');
 
-const replyInReplySchema = new Schema({
+const replyInReplySchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -25,10 +21,7 @@ const replyInReplySchema = new Schema({
         min: [3, 'Reply In Reply Content Minimum 3 Charecter is required'],
         trim: true
     },
-    image: {
-        type: String
-    },
-    video: {
+    img_video: {
         type: String
     },
     reactionCount: {
@@ -40,5 +33,5 @@ const replyInReplySchema = new Schema({
     versionKey: false
 });
 
-const ReplyInReply = model('replyInReply', replyInReplySchema);
+const ReplyInReply = mongoose.model('replyInReply', replyInReplySchema);
 module.exports = ReplyInReply;

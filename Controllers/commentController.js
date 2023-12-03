@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const Post = require("../Models/postModel");
@@ -112,29 +113,36 @@ const readComment = async (req, res) => {
     try {
         const id = req.params.id;
 
-        // const commentRead = await Comment.findById(id)
-        const commentRead = await Comment.findById(id).select(' commentContent img_video');
-
-        if (!commentRead) {
-            res.status(404).json({
-                status: 'failed',
-                message: 'Coment not found',
+        // Validate that the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                status: "Failed",
+                message: "Invalid ID format",
             });
-            return;
         }
 
-        res.status(200).json({
+        const commentRead = await Comment.findById(id).select('commentContent img_video');
+
+        if (!commentRead) {
+            return res.status(404).json({
+                status: 'Failed',
+                message: 'Comment not found',
+            });
+        }
+
+        return res.status(200).json({
             status: "Success",
-            commentRead
-        })
+            data: commentRead,
+        });
 
     } catch (error) {
-        res.status(500).json({
-            status: false,
-            message: error.message
-        })
+        return res.status(500).json({
+            status: "Failed",
+            message: error.message,
+        });
     }
-}
+};
+
 
 // update Comment===============================
 const updateComment = async (req, res) => {
@@ -184,31 +192,51 @@ const updateComment = async (req, res) => {
 const deleteComment = async (req, res) => {
     try {
         const id = req.params.id;
+
+        // Validate that the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                status: "Failed",
+                message: "Invalid ID format",
+            });
+        }
+
+        const comment = await Comment.findById(id);
+
+        if (!comment) {
+            return res.status(404).json({
+                status: "Failed",
+                message: "Comment not found",
+            });
+        }
+
+        // Delete Comment
         await Comment.deleteOne({
             _id: id
         });
 
-        // comment Reply deleted
+        // Delete associated CommentReply documents
         await CommentReply.deleteMany({
             commentId: id
-        })
+        });
 
-        // ReplyInReply/Nested Reply Deleted
+        // Delete associated ReplyInReply documents
         await ReplyInReply.deleteMany({
             commentId: id
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             status: "Success",
-            message: "Comment Delete is Successfully"
-        })
+            message: "Comment and associated replies deleted successfully",
+        });
     } catch (error) {
-        res.status(500).json({
-            status: false,
+        return res.status(500).json({
+            status: "Failed",
             message: error.message,
-        })
+        });
     }
-}
+};
+
 
 module.exports = {
     createComment,

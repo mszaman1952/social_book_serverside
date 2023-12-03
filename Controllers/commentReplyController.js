@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const cloudinary = require("../Helpers/Cloudinary");
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
@@ -111,26 +112,36 @@ const commentReplyCreate = async (req, res) => {
 const getCommentReply = async (req, res) => {
     try {
         const id = req.params.id;
-        const commentReplyGet = await CommentReply.findById(id).select("commentReplyContent img_video");
-        if (!commentReplyGet) {
-            res.status(404).json({
-                status: 'failed',
-                message: 'Coment Reply not found',
+
+        // Validate that the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                status: "Failed",
+                message: "Invalid ID format",
             });
-            return;
         }
 
-        res.status(200).json({
+        const commentReplyGet = await CommentReply.findById(id).select("commentReplyContent img_video");
+
+        if (!commentReplyGet) {
+            return res.status(404).json({
+                status: 'Failed',
+                message: 'Comment Reply not found',
+            });
+        }
+
+        return res.status(200).json({
             status: "Success",
-            data: commentReplyGet
-        })
+            data: commentReplyGet,
+        });
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: error.message
-        })
+        return res.status(500).json({
+            status: "Failed",
+            message: error.message,
+        });
     }
-}
+};
+
 
 // update comment reply======================
 const updateCommentReply = async (req, res) => {
@@ -178,26 +189,46 @@ const updateCommentReply = async (req, res) => {
 const deleteCommentReply = async (req, res) => {
     try {
         const id = req.params.id;
+
+        // Validate that the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                status: "Failed",
+                message: "Invalid ID format",
+            });
+        }
+
+        const commentReply = await CommentReply.findById(id);
+
+        if (!commentReply) {
+            return res.status(404).json({
+                status: "Failed",
+                message: "Comment Reply not found",
+            });
+        }
+
+        // Delete CommentReply
         await CommentReply.deleteOne({
             _id: id
         });
 
-        // delete replyInReply================
+        // Delete associated ReplyInReply documents
         await ReplyInReply.deleteMany({
             commentReplyId: id
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             status: "Success",
-            message: "Comment Reply is Deleted"
-        })
+            message: "Comment Reply and associated Reply In Reply documents are deleted",
+        });
     } catch (error) {
-        res.status(404).json({
+        return res.status(500).json({
             status: "Failed",
-            message: error.message
-        })
+            message: error.message,
+        });
     }
-}
+};
+
 
 module.exports = {
     commentReplyCreate,
