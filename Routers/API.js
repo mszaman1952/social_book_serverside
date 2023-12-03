@@ -150,17 +150,17 @@ router.get('/getMutualFriends/:userId1/:userId2', getMutualFriends);
 router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
 
 // general reaction router section ==============================
-router.post('/addReaction', tokenVerify, toggleReaction);
-router.get('/getSpecificReactions', tokenVerify, getSpecificReactions);
-router.get('/getAllReactions', tokenVerify, getTotalReactionsCount);
+router.post('/addReaction', toggleReaction);
+router.get('/getSpecificReactions', getSpecificReactions);
+router.get('/getAllReactions', getTotalReactionsCount);
 
 // notification router import section ========================
-router.get('/getAllNotificationAsRead/:userId', tokenVerify, markAllNotificationsAsRead);
+router.get('/getAllNotificationAsRead/:userId', markAllNotificationsAsRead);
 
 // follow router section =======================================
-router.post("/addFollow", tokenVerify, followUser);
-router.post("/unFollow", tokenVerify, unfollowUser);
-router.get('/getAllFollowing/:userId', tokenVerify, getAllFollowing);
-router.get('/getAllFollowers/:userId', tokenVerify, getAllFollowers);
+router.post("/addFollow", followUser);
+router.post("/unFollow", unfollowUser);
+router.get('/getAllFollowing/:userId', getAllFollowing);
+router.get('/getAllFollowers/:userId', getAllFollowers);
 
 module.exports = router;
