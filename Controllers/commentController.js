@@ -37,7 +37,11 @@ const createComment = async (req, res) => {
             postOwnerId
         } = req.body;
 
-        const user = await userProfileModel.findById(userId);
+        // const user = await userProfileModel.findById(userId);
+        const user = await userProfileModel.findOne({
+            userId: req.userId
+        });
+
         if (!user) {
             return res.status(404).json({
                 status: 'failed',

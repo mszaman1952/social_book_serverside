@@ -80,7 +80,8 @@ const {
     cancelSentFriendRequest,
     findFriends,
     getMutualFriends,
-    peopleYouKnowMe
+    peopleYouKnowMe,
+    getSentFriendRequests
 } = require('../Controllers/firendRequestController');
 
 // general reaction controller import ==========================
@@ -136,16 +137,17 @@ router.put('/updateReplyInReply/:id', tokenVerify, updateReplyInReply);
 router.delete('/deleteReplyInReply/:id', tokenVerify, deleteReplyInReply);
 
 // friend request section ================================
-router.post('/sendFriendRequest', tokenVerify, sendFriendRequest);
-router.post('/acceptFriendRequest', tokenVerify, acceptFriendRequest);
-router.post('/rejectFriendRequest', tokenVerify, rejectFriendRequest);
-router.post('/unfriend', tokenVerify, unfriend);
-router.get('/allFriends', tokenVerify, getAllFriends);
-router.get('/getAllFriendRequest', tokenVerify, getAllFriendRequestsReceived);
-router.post('/cancelSentFriendRequest', tokenVerify, cancelSentFriendRequest);
-router.get('/findFriend', tokenVerify, findFriends);
-router.get('/getMutualFriends/:userId1/:userId2', tokenVerify, getMutualFriends);
-router.get('/peopleYouKnowMe/:userId', tokenVerify, peopleYouKnowMe);
+router.post('/sendFriendRequest', sendFriendRequest);
+router.post('/acceptFriendRequest', acceptFriendRequest);
+router.post('/rejectFriendRequest', rejectFriendRequest);
+router.post('/unfriend', unfriend);
+router.get('/allFriends', getAllFriends);
+router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
+router.get('/getAllSentFriendRequests', getSentFriendRequests)
+router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
+router.get('/findFriend', findFriends);
+router.get('/getMutualFriends/:userId1/:userId2', getMutualFriends);
+router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
 
 // general reaction router section ==============================
 router.post('/addReaction', tokenVerify, toggleReaction);

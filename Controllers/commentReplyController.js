@@ -38,7 +38,7 @@ const commentReplyCreate = async (req, res) => {
         // Assuming userId is available in req.userId
         const userId = await userProfileModel.findOne({
             userId: req.userId
-        });
+        }).select("_id");
 
         // Validate user existence
         if (!userId) {
