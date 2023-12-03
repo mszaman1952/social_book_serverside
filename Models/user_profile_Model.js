@@ -16,7 +16,7 @@ const buffer = new Buffer.from(bufferDatta);
 const result = buffer.toString('base64');
 const imgf = `data:${'image/svg+xml'};base64,${result}`;
 
-const userSchema = new Schema({
+const profileSchema = new Schema({
     userName: {
         type: String,
         trim: true,
@@ -139,6 +139,6 @@ const userSchema = new Schema({
     versionKey: false
 });
 
-const userProfileModel = model('userProfile', userSchema);
+const userProfileModel = model('userProfile', profileSchema);
 
 module.exports = userProfileModel;

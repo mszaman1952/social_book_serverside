@@ -1,18 +1,14 @@
-const {
-    Schema,
-    model
-} = require('mongoose');
-
-const commentReplySchema = new Schema({
+const mongoose = require('mongoose');
+const commentReplySchema = new mongoose.Schema({
     userId: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "userProfile"
     },
     commentId: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "Comment"
+        ref: "comment"
     },
     commentReplyContent: {
         type: String,
@@ -31,5 +27,5 @@ const commentReplySchema = new Schema({
     versionKey: false
 });
 
-const CommentReply = model('commentReply', commentReplySchema);
+const CommentReply = mongoose.model('commentReply', commentReplySchema);
 module.exports = CommentReply;

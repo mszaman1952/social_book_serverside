@@ -37,10 +37,7 @@ const createComment = async (req, res) => {
             postOwnerId
         } = req.body;
 
-        // const user = await userProfileModel.findById(userId);
-        const user = await userProfileModel.findOne({
-            userId: req.userId
-        });
+        const user = await userProfileModel.findById(userId);
 
         if (!user) {
             return res.status(404).json({
@@ -110,15 +107,14 @@ const createComment = async (req, res) => {
     }
 };
 
-
-
-
 // read Comment ===========================
 const readComment = async (req, res) => {
     try {
         const id = req.params.id;
 
-        const commentRead = await Comment.findById(id)
+        // const commentRead = await Comment.findById(id)
+        const commentRead = await Comment.findById(id).select(' commentContent img_video');
+
         if (!commentRead) {
             res.status(404).json({
                 status: 'failed',

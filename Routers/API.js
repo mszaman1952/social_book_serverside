@@ -119,16 +119,16 @@ router.delete('/deletePost/:id', tokenVerify, deletePost);
 router.post('/sharePost', tokenVerify, sharePost);
 
 // comment  section==============================================
-router.post('/createComment', tokenVerify, fileUpload, createComment);
-router.get('/readComment/:id', tokenVerify, readComment);
-router.put('/updateComment/:id', tokenVerify, fileUpload, updateComment);
-router.delete('/deleteComment/:id', tokenVerify, deleteComment);
+router.post('/createComment', fileUpload, createComment);
+router.get('/readComment/:id', readComment);
+router.put('/updateComment/:id', fileUpload, updateComment);
+router.delete('/deleteComment/:id', deleteComment);
 
 // reply section==============================================
-router.post('/createCommentReply/:commentId', tokenVerify, commentReplyCreate);
-router.get('/getCommentReply/:id', tokenVerify, getCommentReply);
-router.put('/updateCommentReply/:id', tokenVerify, updateCommentReply);
-router.delete('/deleteCommentReply/:id', tokenVerify, deleteCommentReply);
+router.post('/createCommentReply',fileUpload, commentReplyCreate);
+router.get('/getCommentReply/:id', getCommentReply);
+router.put('/updateCommentReply/:id',fileUpload, updateCommentReply);
+router.delete('/deleteCommentReply/:id', deleteCommentReply);
 
 // reply in reply section===============================
 router.post('/createReplyInReply', tokenVerify, createReplyInReply);
