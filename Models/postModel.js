@@ -89,13 +89,17 @@ const postsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Share'
     }],
+    comments: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'comment' 
+    }],
 }, {
     timestamps: true,
     versionKey: false
 });
 
 // Create the Post model with the defined schema
-const Post = model('Posts', postsSchema);
+const Post = model('Post', postsSchema);
 
 // Export the Post model
 module.exports = Post;

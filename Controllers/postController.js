@@ -12,49 +12,77 @@ const {
     validationLength
 } = require("../Helpers/Validation");
 const mongoose = require('mongoose');
-const Notification = require('../Models/notificationModel');
 const ObjectId = mongoose.Types.ObjectId;
 
 // get all posts ===============
+
 const getPosts = async (req, res) => {
     try {
-        const posts = await postModel.find();
-        if (posts) {
-            res.status(200).send({
-                success: true,
-                message: 'find all posts',
-                data: posts
-            });
-        } else {
-            await clientError(res, 404, 'post not found');
-        }
+      // Find all posts, populate comments with specific fields, and select fields from the populated comments
+      const posts = await postModel.find()
+        .populate({
+          path: 'comments',
+          select: '_id commentContent img_video',
+        })
+        .select("_id content image_video"); 
+
+      if (posts) {
+        // Extract comments from the populated posts
+        const postsWithComments = posts.map(post => {
+          return {
+            _id: post._id,
+            content: post.content, 
+            image_video: post.image_video,
+            comments: post.comments,
+          };
+        });
+  
+        res.status(200).json({
+          success: true,
+          message: 'Find all posts',
+          data: postsWithComments,
+        });
+      } else {
+        res.status(404).json({ success: false, message: 'No posts found' });
+      }
     } catch (error) {
-        console.log(error, "------------------------------------");
-        await serverError(res, 500, error.message);
+      console.error('Error fetching posts:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-};
+  };
+  
 
 // get single post ===============
+
 const getPost = async (req, res) => {
     try {
-        const id = req.params.id;
-        const post = await postModel.findOne({
-            _id: id
-        });
-        if (post) {
-            res.status(200).send({
-                success: true,
-                message: 'find single posts',
-                data: post
-            });
-        } else {
-            await clientError(res, 404, 'post with this id was not found');
-        }
+      const id = req.params.id;
+  
+      // Find the post by ID, populate comments with specific fields, and select fields from the populated comments
+      const post = await postModel.findById(id)
+        .populate({
+          path: 'comments',
+          select: '_id commentContent img_video',
+        })
+        .select("_id content image_video"); 
+  
+      if (!post) {
+        return res.status(404).json({ success: false, message: 'Post not found' });
+      }
+    
+      // Respond with post details and comments
+      res.json({
+        success: true,
+        message: 'Find single post',
+          post,
+      });
     } catch (error) {
-        await serverError(res, 500, error.message);
+      console.error('Error fetching post:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-};
-
+  };
+  
+  
 // post add ===========================
 const addPost = async (req, res) => {
     try {

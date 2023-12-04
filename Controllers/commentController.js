@@ -95,6 +95,11 @@ const createComment = async (req, res) => {
 
         await newNotification.save();
 
+        // Add Comment on Post
+        const posts = await Post.findById(postId);
+        posts.comments.push(newComment);
+        await posts.save();
+
         return res.status(201).json({
             status: 'Success',
             data: newComment,
