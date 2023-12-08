@@ -6,11 +6,6 @@ const replyInReplySchema = new mongoose.Schema({
         required: true,
         ref: "userProfile"
     },
-    commentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "comment"
-    },
     commentReplyId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

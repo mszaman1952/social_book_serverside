@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const Post = require("../Models/postModel");
@@ -10,8 +10,7 @@ const {
 const userProfileModel = require('../Models/user_profile_Model');
 const cloudinary = require("../Helpers/Cloudinary");
 
-
-// Function to upload a file to Cloudinary
+// Function to upload a file to Cloudinary=======================
 const uploadToCloudinary = async (file) => {
     try {
         const result = await cloudinary.uploader.upload(file.path, {
@@ -28,14 +27,14 @@ const uploadToCloudinary = async (file) => {
     }
 };
 
-// create comment =====================
+// create comment ==========================================
 const createComment = async (req, res) => {
     try {
         const {
             userId,
             postId,
             commentContent,
-            postOwnerId
+            postOwnerId,
         } = req.body;
 
         const user = await userProfileModel.findById(userId);
@@ -79,6 +78,7 @@ const createComment = async (req, res) => {
             }
         }
 
+        // Create the comment object
         const newComment = await Comment({
             userId,
             postId,
@@ -105,7 +105,6 @@ const createComment = async (req, res) => {
             data: newComment,
         });
     } catch (error) {
-        console.error('Unexpected error in createComment:', error);
         return res.status(500).json({
             status: 'Fail',
             message: 'Unexpected error',
@@ -113,7 +112,7 @@ const createComment = async (req, res) => {
     }
 };
 
-// read Comment ===========================
+// read Comment =============================================
 const readComment = async (req, res) => {
     try {
         const id = req.params.id;
@@ -126,7 +125,10 @@ const readComment = async (req, res) => {
             });
         }
 
-        const commentRead = await Comment.findById(id).select('commentContent img_video');
+        const commentRead = await Comment.findById(id).select('commentContent img_video').populate({
+            path: 'replies',
+            select: 'commentReplyContent img_video', 
+        });
 
         if (!commentRead) {
             return res.status(404).json({
@@ -148,8 +150,31 @@ const readComment = async (req, res) => {
     }
 };
 
+// get all comments =====================================
+const getAllComments = async (req, res) => {
+    try {
+      const comments = await Comment.find()
+        .select('commentContent img_video') 
+        .populate({
+          path: 'replies',
+          select: 'commentReplyContent img_video', 
+        });
+  
+      return res.status(200).json({
+        status: "Success",
+        data: comments,
+      });
+  
+    } catch (error) {
+      return res.status(500).json({
+        status: "Failed",
+        message: error.message,
+      });
+    }
+  };
+  
 
-// update Comment===============================
+// update Comment===============================================
 const updateComment = async (req, res) => {
     try {
         const id = req.params.id;
@@ -193,7 +218,7 @@ const updateComment = async (req, res) => {
     }
 };
 
-// comment delete =========================
+// comment delete =================================================
 const deleteComment = async (req, res) => {
     try {
         const id = req.params.id;
@@ -242,10 +267,10 @@ const deleteComment = async (req, res) => {
     }
 };
 
-
 module.exports = {
     createComment,
     readComment,
+    getAllComments,
     updateComment,
     deleteComment
 }

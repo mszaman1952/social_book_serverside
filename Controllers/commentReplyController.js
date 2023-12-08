@@ -44,15 +44,6 @@ const commentReplyCreate = async (req, res) => {
             });
         }
 
-        // Validate comment existence
-        const comment = await Comment.findById(commentId);
-        if (!comment) {
-            return res.status(404).json({
-                status: 'failed',
-                message: 'Comment not found',
-            });
-        }
-
         // Find the img_video file in the request
         const imgVideoFile = req.files['img_video'] ? req.files['img_video'][0] : null;
 
@@ -85,6 +76,20 @@ const commentReplyCreate = async (req, res) => {
             commentReplyContent: commentReplyContent ? commentReplyContent : null,
             img_video: imgVideoUploadResult ? imgVideoUploadResult.secure_url : null,
         }).save();
+
+        // Find the comment and push the reply to the replies array
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).json({
+                status: 'failed',
+                message: 'Comment not found',
+            });
+        }
+
+        comment.commentReplies.push(newCommentReply._id);
+        await comment.save();
+
         // Create a new notification
         const newNotification = new Notification({
             userId: commentOwnerId,
@@ -100,13 +105,13 @@ const commentReplyCreate = async (req, res) => {
             data: newCommentReply,
         });
     } catch (error) {
-        console.error('Unexpected error in commentReplyCreate:', error);
         return res.status(500).json({
             status: 'Fail',
             message: 'Unexpected error',
         });
     }
 };
+
 
 // get comment reply ====================
 const getCommentReply = async (req, res) => {
@@ -185,7 +190,96 @@ const updateCommentReply = async (req, res) => {
     }
 };
 
+// const updateCommentReply = async (req, res) => {
+//     try {
+//         const { commentReplyId, replyContent, imgVideoFile } = req.body;
+
+//         // Validate if commentReplyId is provided
+//         if (!commentReplyId) {
+//             return res.status(400).json({
+//                 status: 'failed',
+//                 message: 'commentReplyId is required',
+//             });
+//         }
+
+//         // Find the CommentReply by ID
+//         const commentReply = await CommentReply.findById(commentReplyId);
+
+//         // Validate if the CommentReply exists
+//         if (!commentReply) {
+//             return res.status(404).json({
+//                 status: 'failed',
+//                 message: 'CommentReply not found',
+//             });
+//         }
+
+//         // Update the CommentReply's content if provided
+//         if (replyContent) {
+//             commentReply.commentReplyContent = replyContent;
+//         }
+
+//         // Update the CommentReply's img_video if provided
+//         if (imgVideoFile) {
+//             try {
+//                 const imgVideoUploadResult = await uploadToCloudinary(imgVideoFile);
+//                 commentReply.img_video = imgVideoUploadResult.secure_url;
+//             } catch (uploadError) {
+//                 return res.status(500).json({
+//                     status: 'Fail',
+//                     message: 'Error uploading img_video to Cloudinary',
+//                     uploadError,
+//                 });
+//             }
+//         }
+
+//         // Save the updated CommentReply
+//         await commentReply.save();
+
+//         // Update nested replies if present
+//         if (commentReply.nestedReplies && commentReply.nestedReplies.length > 0) {
+//             await Promise.all(commentReply.nestedReplies.map(async (nestedReplyId) => {
+//                 const nestedReply = await ReplyInReply.findById(nestedReplyId);
+                
+//                 // Update the nested reply's content if provided
+//                 if (replyContent) {
+//                     nestedReply.replyInReplyContent = replyContent;
+//                 }
+
+//                 // Update the nested reply's img_video if provided
+//                 if (imgVideoFile) {
+//                     try {
+//                         const imgVideoUploadResult = await uploadToCloudinary(imgVideoFile);
+//                         nestedReply.img_video = imgVideoUploadResult.secure_url;
+//                     } catch (uploadError) {
+//                         return res.status(500).json({
+//                             status: 'Fail',
+//                             message: 'Error uploading img_video to Cloudinary',
+//                             uploadError,
+//                         });
+//                     }
+//                 }
+
+//                 // Save the updated nested reply
+//                 await nestedReply.save();
+//             }));
+//         }
+
+//         res.status(200).json({
+//             status: 'Success',
+//             message: 'CommentReply updated successfully',
+//             data: commentReply,
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             status: 'failed',
+//             message: error.message,
+//         });
+//     }
+// };
+
+
 // delete commentReply=====================
+
 const deleteCommentReply = async (req, res) => {
     try {
         const id = req.params.id;
@@ -216,6 +310,7 @@ const deleteCommentReply = async (req, res) => {
         await ReplyInReply.deleteMany({
             commentReplyId: id
         });
+        
 
         return res.status(200).json({
             status: "Success",

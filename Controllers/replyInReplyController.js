@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const cloudinary = require("../Helpers/Cloudinary");
-const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const Notification = require("../Models/notificationModel");
 const ReplyInReply = require("../Models/replyInReplyModel");
@@ -21,12 +20,11 @@ const uploadToCloudinary = async (file) => {
     }
 };
 
-// createReplyInReply ===========================
+// createReplyInReply =====================================
 const createReplyInReply = async (req, res) => {
     try {
         const {
             userId,
-            commentId,
             commentReplyId,
             replyInReplyContent,
             commentReplyOwnerId
@@ -34,10 +32,9 @@ const createReplyInReply = async (req, res) => {
 
         // Validation check
         const user = await userProfileModel.findById(userId);
-        const comment = await Comment.findById(commentId);
         const commentReply = await CommentReply.findById(commentReplyId);
 
-        if (!user || !comment || !commentReply) {
+        if (!user || !commentReply) {
             return res.status(404).json({
                 status: 'failed',
                 message: 'User, Comment, or CommentReply not found',
@@ -48,7 +45,7 @@ const createReplyInReply = async (req, res) => {
         const imgVideoFile = req.files['img_video'] ? req.files['img_video'][0] : null;
 
         // Check if at least one of content, image, or video is provided
-        if (!replyInReplyContent || !imgVideoFile) {
+        if (!replyInReplyContent && !imgVideoFile) {
             return res.status(400).json({
                 status: 'failed',
                 message: 'At least one of content, image, or video is required',
@@ -62,19 +59,20 @@ const createReplyInReply = async (req, res) => {
                 imgVideoUploadResult = await uploadToCloudinary(imgVideoFile);
             } catch (uploadError) {
                 return res.status(500).json({
-                    status: 'Fail',
+                    status: 'failed',
                     message: 'Error uploading img_video to Cloudinary',
                     uploadError,
                 });
             }
         }
-        // Assuming you have a model for ReplyInReply
+
+        // Create a new ReplyInReply instance
         const replyInReplyCreate = await new ReplyInReply({
             userId,
-            commentId,
             commentReplyId,
-            replyInReplyContent: replyInReplyContent ? replyInReplyContent : null,
+            replyInReplyContent: replyInReplyContent || null,
             img_video: imgVideoUploadResult ? imgVideoUploadResult.secure_url : null,
+            nestedReplies: [], // Initialize with an empty array
         }).save();
 
         // Create a new notification
@@ -86,14 +84,23 @@ const createReplyInReply = async (req, res) => {
         });
 
         await newNotification.save();
+
+        // Update the CommentReply to include the new ReplyInReply
+        commentReply.nestedReplies.push(replyInReplyCreate._id);
+        await commentReply.save();
+        // Include the nestedReplies field when responding
+        replyInReplyCreate.nestedReplies = [];
+
+
         res.status(201).json({
-            status: 'Success',
+            status: 'success',
             data: replyInReplyCreate,
         });
     } catch (error) {
+        console.error('Unexpected error in createReplyInReply:', error);
         res.status(500).json({
             status: 'failed',
-            message: error.message,
+            message: 'Unexpected error',
         });
     }
 };
@@ -111,7 +118,13 @@ const getReplyInReply = async (req, res) => {
             });
         }
 
-        const replyInReplyGet = await ReplyInReply.findById(id).select("replyInReplyContent img_video");
+        const replyInReplyGet = await ReplyInReply.findById(id)
+            .select("replyInReplyContent img_video nestedReplies")
+            .populate({
+                path: "nestedReplies",
+                select: "replyInReplyContent img_video",
+            })
+            .exec();
 
         if (!replyInReplyGet) {
             return res.status(404).json({
@@ -131,7 +144,6 @@ const getReplyInReply = async (req, res) => {
         });
     }
 };
-
 
 // update ReplyInReply======================
 const updateReplyInReply = async (req, res) => {

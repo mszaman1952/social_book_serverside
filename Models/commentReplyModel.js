@@ -22,6 +22,11 @@ const commentReplySchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    nestedReplies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'replyInReply',
+    }],
+
 }, {
     timestamps: true,
     versionKey: false

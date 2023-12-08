@@ -26,6 +26,10 @@ const commentSchema = new Schema({
         type: Number,
         default: 0,
     },
+    commentReplies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'commentReply',
+      }],
 }, {
     timestamps: true,
     versionKey: false

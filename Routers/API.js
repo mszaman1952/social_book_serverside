@@ -50,7 +50,8 @@ const {
     createComment,
     readComment,
     updateComment,
-    deleteComment
+    deleteComment,
+    getAllComments
 } = require('../Controllers/commentController');
 
 // comment reply controller import=============================
@@ -81,7 +82,8 @@ const {
     findFriends,
     getMutualFriends,
     peopleYouKnowMe,
-    getSentFriendRequests
+    getSentFriendRequests,
+    removeFromPeopleYouKnow
 } = require('../Controllers/firendRequestController');
 
 // general reaction controller import ==========================
@@ -121,6 +123,7 @@ router.post('/sharePost', tokenVerify, sharePost);
 // comment  section==============================================
 router.post('/createComment', fileUpload, createComment);
 router.get('/readComment/:id', readComment);
+router.get('/getAllComment', getAllComments);
 router.put('/updateComment/:id', fileUpload, updateComment);
 router.delete('/deleteComment/:id', deleteComment);
 
@@ -148,6 +151,7 @@ router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
 router.get('/findFriend', findFriends);
 router.get('/getMutualFriends/:userId1/:userId2', getMutualFriends);
 router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
+router.post('/removePeopleYouMayKnowMe', removeFromPeopleYouKnow);
 
 // general reaction router section ==============================
 router.post('/addReaction', toggleReaction);

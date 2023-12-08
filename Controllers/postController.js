@@ -397,10 +397,11 @@ const deletePost = async (req, res) => {
             postId: Comment._id
         });
 
-        // Delete all nseted reply
+        // Delete all reply in reply
         await ReplyInReply.deleteMany({
             postId: ReplyInReply._id
         })
+
 
         res.status(200).send({
             success: true,

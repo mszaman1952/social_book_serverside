@@ -662,6 +662,45 @@ const peopleYouKnowMe = async (req, res) => {
     }
 };
 
+// remove from people you may know me ==========================
+const removeFromPeopleYouKnow = async (req, res) => {
+    try {
+        const { userId, removeUserId } = req.body;
+
+        // Find the current user
+        const currentUser = await userProfileModel.findOne({ _id: userId });
+
+        if (!currentUser) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
+
+        // Ensure currentUser.peopleYouMayKnow is an array
+        currentUser.peopleYouMayKnow = Array.isArray(currentUser.peopleYouMayKnow)
+            ? currentUser.peopleYouMayKnow.filter((user) => user.toString() !== removeUserId)
+            : [];
+
+            // Check if the user was already removed
+        if (currentUser.peopleYouMayKnow.length === 0) {
+            return res.status(400).json({
+                error: 'User already removed from People You May Know',
+            });
+        }
+
+        await currentUser.save();
+
+        res.json({
+            success: true,
+            message: 'User removed from People You May Know',
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: 'Internal Server Error',
+        });
+    }
+};
+
 
 module.exports = {
     sendFriendRequest,
@@ -674,5 +713,6 @@ module.exports = {
     cancelSentFriendRequest,
     findFriends,
     getMutualFriends,
-    peopleYouKnowMe
+    peopleYouKnowMe,
+    removeFromPeopleYouKnow
 };
