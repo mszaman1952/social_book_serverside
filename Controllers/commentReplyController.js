@@ -190,96 +190,7 @@ const updateCommentReply = async (req, res) => {
     }
 };
 
-// const updateCommentReply = async (req, res) => {
-//     try {
-//         const { commentReplyId, replyContent, imgVideoFile } = req.body;
-
-//         // Validate if commentReplyId is provided
-//         if (!commentReplyId) {
-//             return res.status(400).json({
-//                 status: 'failed',
-//                 message: 'commentReplyId is required',
-//             });
-//         }
-
-//         // Find the CommentReply by ID
-//         const commentReply = await CommentReply.findById(commentReplyId);
-
-//         // Validate if the CommentReply exists
-//         if (!commentReply) {
-//             return res.status(404).json({
-//                 status: 'failed',
-//                 message: 'CommentReply not found',
-//             });
-//         }
-
-//         // Update the CommentReply's content if provided
-//         if (replyContent) {
-//             commentReply.commentReplyContent = replyContent;
-//         }
-
-//         // Update the CommentReply's img_video if provided
-//         if (imgVideoFile) {
-//             try {
-//                 const imgVideoUploadResult = await uploadToCloudinary(imgVideoFile);
-//                 commentReply.img_video = imgVideoUploadResult.secure_url;
-//             } catch (uploadError) {
-//                 return res.status(500).json({
-//                     status: 'Fail',
-//                     message: 'Error uploading img_video to Cloudinary',
-//                     uploadError,
-//                 });
-//             }
-//         }
-
-//         // Save the updated CommentReply
-//         await commentReply.save();
-
-//         // Update nested replies if present
-//         if (commentReply.nestedReplies && commentReply.nestedReplies.length > 0) {
-//             await Promise.all(commentReply.nestedReplies.map(async (nestedReplyId) => {
-//                 const nestedReply = await ReplyInReply.findById(nestedReplyId);
-                
-//                 // Update the nested reply's content if provided
-//                 if (replyContent) {
-//                     nestedReply.replyInReplyContent = replyContent;
-//                 }
-
-//                 // Update the nested reply's img_video if provided
-//                 if (imgVideoFile) {
-//                     try {
-//                         const imgVideoUploadResult = await uploadToCloudinary(imgVideoFile);
-//                         nestedReply.img_video = imgVideoUploadResult.secure_url;
-//                     } catch (uploadError) {
-//                         return res.status(500).json({
-//                             status: 'Fail',
-//                             message: 'Error uploading img_video to Cloudinary',
-//                             uploadError,
-//                         });
-//                     }
-//                 }
-
-//                 // Save the updated nested reply
-//                 await nestedReply.save();
-//             }));
-//         }
-
-//         res.status(200).json({
-//             status: 'Success',
-//             message: 'CommentReply updated successfully',
-//             data: commentReply,
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             status: 'failed',
-//             message: error.message,
-//         });
-//     }
-// };
-
-
-// delete commentReply=====================
-
+// delete comment reply====================================
 const deleteCommentReply = async (req, res) => {
     try {
         const id = req.params.id;
@@ -292,6 +203,7 @@ const deleteCommentReply = async (req, res) => {
             });
         }
 
+        // Retrieve the comment reply
         const commentReply = await CommentReply.findById(id);
 
         if (!commentReply) {
@@ -300,6 +212,9 @@ const deleteCommentReply = async (req, res) => {
                 message: "Comment Reply not found",
             });
         }
+
+        // Obtain the ID of the associated comment
+        const commentId = commentReply.commentId;
 
         // Delete CommentReply
         await CommentReply.deleteOne({
@@ -310,11 +225,17 @@ const deleteCommentReply = async (req, res) => {
         await ReplyInReply.deleteMany({
             commentReplyId: id
         });
-        
+
+        // Update the associated comment by removing the comment reply ID
+        await Comment.findByIdAndUpdate(
+            commentId,
+            { $pull: { commentReplies: id } },
+            { new: true }
+        );
 
         return res.status(200).json({
             status: "Success",
-            message: "Comment Reply and associated Reply In Reply documents are deleted",
+            message: "Comment Reply and associated Reply In Reply documents are deleted, and comment is updated",
         });
     } catch (error) {
         return res.status(500).json({
@@ -323,7 +244,6 @@ const deleteCommentReply = async (req, res) => {
         });
     }
 };
-
 
 module.exports = {
     commentReplyCreate,

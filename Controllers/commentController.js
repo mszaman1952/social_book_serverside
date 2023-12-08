@@ -219,6 +219,57 @@ const updateComment = async (req, res) => {
 };
 
 // comment delete =================================================
+// const deleteComment = async (req, res) => {
+//     try {
+//         const id = req.params.id;
+
+//         // Validate that the provided ID is a valid ObjectId
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({
+//                 status: "Failed",
+//                 message: "Invalid ID format",
+//             });
+//         }
+
+//         const comment = await Comment.findById(id);
+
+//         if (!comment) {
+//             return res.status(404).json({
+//                 status: "Failed",
+//                 message: "Comment not found",
+//             });
+//         }
+
+//         // Delete Comment
+//         await Comment.deleteOne({
+//             _id: id
+//         });
+
+//         // Delete associated CommentReply documents
+//         await CommentReply.deleteMany({
+//             commentId: id
+//         });
+
+//         // Delete associated ReplyInReply documents
+//         await ReplyInReply.deleteMany({
+//             commentId: id
+//         });
+
+//         // remove comment from database
+//         await Comment.findByIdAndRemove(comment);
+
+//         return res.status(200).json({
+//             status: "Success",
+//             message: "Comment and associated replies deleted successfully",
+//         });
+//     } catch (error) {
+//         return res.status(500).json({
+//             status: "Failed",
+//             message: error.message,
+//         });
+//     }
+// };
+
 const deleteComment = async (req, res) => {
     try {
         const id = req.params.id;
@@ -240,6 +291,9 @@ const deleteComment = async (req, res) => {
             });
         }
 
+        // Find the associated post
+        const postId = comment.postId; 
+
         // Delete Comment
         await Comment.deleteOne({
             _id: id
@@ -255,6 +309,15 @@ const deleteComment = async (req, res) => {
             commentId: id
         });
 
+        // Remove comment from the associated post
+        await Post.findByIdAndUpdate(
+            postId,
+            {
+                $pull: { comments: id } 
+            },
+            { new: true }
+        );
+
         return res.status(200).json({
             status: "Success",
             message: "Comment and associated replies deleted successfully",
@@ -266,6 +329,7 @@ const deleteComment = async (req, res) => {
         });
     }
 };
+
 
 module.exports = {
     createComment,

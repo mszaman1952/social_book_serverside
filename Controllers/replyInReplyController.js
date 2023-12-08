@@ -209,21 +209,32 @@ const deleteReplyInReply = async (req, res) => {
             });
         }
 
+        const replyInReplyId = replyInReply.commentReplyId; // Assuming you have a field named commentReplyId
+
         await ReplyInReply.deleteOne({
             _id: id
         });
+
+        // Remove the deleted ReplyInReply ID from the CommentReply model
+        await CommentReply.findByIdAndUpdate(
+            replyInReplyId,
+            { $pull: { nestedReplies :  id } },
+            { new: true }
+        );
 
         return res.status(200).json({
             status: "Success",
             message: "Reply In Reply is deleted",
         });
     } catch (error) {
+        console.error('Unexpected error in deleteReplyInReply:', error);
         return res.status(500).json({
             status: "Failed",
             message: error.message,
         });
     }
 };
+
 
 module.exports = {
     createReplyInReply,
