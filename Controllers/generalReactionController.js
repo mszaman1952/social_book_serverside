@@ -1,4 +1,3 @@
-// const userModel = require("../Models/User_Model");
 const Comment = require("../Models/commentModel");
 const CommentReply = require("../Models/commentReplyModel");
 const GeneralReaction = require("../Models/generalReactionModel");

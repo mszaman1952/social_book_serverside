@@ -121,50 +121,50 @@ router.delete('/deletePost/:id', tokenVerify, deletePost);
 router.post('/sharePost', tokenVerify, sharePost);
 
 // comment  section==============================================
-router.post('/createComment', fileUpload, createComment);
-router.get('/readComment/:id', readComment);
-router.get('/getAllComment', getAllComments);
-router.put('/updateComment/:id', fileUpload, updateComment);
-router.delete('/deleteComment/:id', deleteComment);
+router.post('/createComment', fileUpload,tokenVerify, createComment);
+router.get('/readComment/:id',tokenVerify, readComment);
+router.get('/getAllComment',tokenVerify, getAllComments);
+router.put('/updateComment/:id', fileUpload,tokenVerify, updateComment);
+router.delete('/deleteComment/:id',tokenVerify, deleteComment);
 
 // reply section==============================================
-router.post('/createCommentReply',fileUpload, commentReplyCreate);
-router.get('/getCommentReply/:id', getCommentReply);
-router.put('/updateCommentReply/:id',fileUpload, updateCommentReply);
-router.delete('/deleteCommentReply/:id', deleteCommentReply);
+router.post('/createCommentReply',fileUpload,tokenVerify, commentReplyCreate);
+router.get('/getCommentReply/:id',tokenVerify, getCommentReply);
+router.put('/updateCommentReply/:id',fileUpload,tokenVerify, updateCommentReply);
+router.delete('/deleteCommentReply/:id',tokenVerify, deleteCommentReply);
 
 // reply in reply section===============================
-router.post('/createReplyInReply',fileUpload, createReplyInReply);
-router.get('/getReplyInReply/:id', getReplyInReply);
-router.put('/updateReplyInReply/:id',fileUpload, updateReplyInReply);
-router.delete('/deleteReplyInReply/:id', deleteReplyInReply);
+router.post('/createReplyInReply',fileUpload,tokenVerify, createReplyInReply);
+router.get('/getReplyInReply/:id',tokenVerify, getReplyInReply);
+router.put('/updateReplyInReply/:id',fileUpload,tokenVerify, updateReplyInReply);
+router.delete('/deleteReplyInReply/:id',tokenVerify, deleteReplyInReply);
 
 // friend request section ================================
-router.post('/sendFriendRequest', sendFriendRequest);
-router.post('/acceptFriendRequest', acceptFriendRequest);
-router.post('/rejectFriendRequest', rejectFriendRequest);
-router.post('/unfriend', unfriend);
-router.get('/allFriends', getAllFriends);
-router.get('/getAllFriendRequest', getAllFriendRequestsReceived);
-router.get('/getAllSentFriendRequests', getSentFriendRequests)
-router.post('/cancelSentFriendRequest', cancelSentFriendRequest);
-router.get('/findFriend', findFriends);
-router.get('/getMutualFriends/:userId1/:userId2', getMutualFriends);
-router.get('/peopleYouKnowMe/:userId', peopleYouKnowMe);
-router.post('/removePeopleYouMayKnowMe', removeFromPeopleYouKnow);
+router.post('/sendFriendRequest',tokenVerify, sendFriendRequest);
+router.post('/acceptFriendRequest',tokenVerify, acceptFriendRequest);
+router.post('/rejectFriendRequest',tokenVerify, rejectFriendRequest);
+router.post('/unfriend',tokenVerify, unfriend);
+router.get('/allFriends',tokenVerify, getAllFriends);
+router.get('/getAllFriendRequest',tokenVerify, getAllFriendRequestsReceived);
+router.get('/getAllSentFriendRequests',tokenVerify, getSentFriendRequests)
+router.post('/cancelSentFriendRequest',tokenVerify, cancelSentFriendRequest);
+router.get('/findFriend',tokenVerify, findFriends);
+router.get('/getMutualFriends/:userId1/:userId2',tokenVerify, getMutualFriends);
+router.get('/peopleYouKnowMe/:userId',tokenVerify, peopleYouKnowMe);
+router.post('/removePeopleYouMayKnowMe',tokenVerify, removeFromPeopleYouKnow);
 
 // general reaction router section ==============================
-router.post('/addReaction', toggleReaction);
-router.get('/getSpecificReactions', getSpecificReactions);
-router.get('/getAllReactions', getTotalReactionsCount);
+router.post('/addReaction',tokenVerify, toggleReaction);
+router.get('/getSpecificReactions',tokenVerify, getSpecificReactions);
+router.get('/getAllReactions',tokenVerify, getTotalReactionsCount);
 
 // notification router import section ========================
-router.get('/getAllNotificationAsRead/:userId', markAllNotificationsAsRead);
+router.get('/getAllNotificationAsRead/:userId',tokenVerify, markAllNotificationsAsRead);
 
 // follow router section =======================================
-router.post("/addFollow", followUser);
-router.post("/unFollow", unfollowUser);
-router.get('/getAllFollowing/:userId', getAllFollowing);
-router.get('/getAllFollowers/:userId', getAllFollowers);
+router.post("/addFollow",tokenVerify, followUser);
+router.post("/unFollow",tokenVerify, unfollowUser);
+router.get('/getAllFollowing/:userId',tokenVerify, getAllFollowing);
+router.get('/getAllFollowers/:userId',tokenVerify, getAllFollowers);
 
 module.exports = router;
